@@ -5,13 +5,22 @@ import StatsCard from '../components/StatsCard';
 import StatsFilterBar from '../components/StatsFilterBar';
 import { getAllTimeStats } from '../lib/queries/getStats';
 
+type YamalStats = {
+  appearances: number;
+  assists: number;
+  goals: number;
+  contributions: number;
+  minutesPerGoal: number;
+  minutesPerContribution: number;
+};
+
 export default function ClubPage() {
   const [selectedFilter, setSelectedFilter] = useState<{
     type: 'season' | 'year';
     value: string | number;
   } | null>(null);
 
-  const [stats, setStats] = useState<any | null>(null);
+  const [stats, setStats] = useState<YamalStats | null>(null);
 
   useEffect(() => {
     getAllTimeStats({
