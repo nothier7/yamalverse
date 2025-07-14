@@ -45,7 +45,7 @@ export default function Home() {
       { key: 'championsLeague', args: { competition: 'Champions Lg', ...filterParams } },
       { key: 'Liga', args: { competition: 'La Liga', ...filterParams } },
       { key: 'Copa', args: { competition: 'Copa del Rey', ...filterParams } },
-      { key: 'euro', args: { competition: 'Euro', ...filterParams } },
+      { key: 'euro', args: { competition: 'UEFA Euro', ...filterParams } },
     ] as const;
 
     getFilteredStats(queries).then((result) => {
