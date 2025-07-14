@@ -13,7 +13,7 @@ export async function getAllTimeStats(filter?: {
   }
 
   if (filter?.competition) {
-    query = query.ilike('competition', `%${filter.competition}%`);
+    query = query.eq('competition', filter.competition);
   }
 
   if (filter?.season) {
