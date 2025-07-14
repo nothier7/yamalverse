@@ -18,7 +18,7 @@ export async function getFilteredStats<
   const output = {} as { [K in T[number]['key']]: YamalStats | null };
 
   queries.forEach((q, i) => {
-    // We cast q.key here to a known key of output
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (output as any)[q.key] = results[i];
   });
 
