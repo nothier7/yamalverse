@@ -21,14 +21,24 @@ export default function HonoursPage() {
 
   const teamHonours = [
     {
-      title: 'UEFA Nations League',
-      times: 1,
-      seasons: ['2022/23'],
-    },
-    {
       title: 'La Liga',
       times: 2,
       seasons: ['2022/23', '2024/25'],
+    },
+    {
+      title: 'Copa del Rey',
+      times: 1,
+      seasons: ['2024/25'],
+    },
+    {
+      title: 'Spanish Super Cup',
+      times: 1,
+      seasons: ['2024/25'],
+    },
+    {
+      title: 'UEFA EURO',
+      times: 1,
+      seasons: ['2024'],
     },
   ];
 
