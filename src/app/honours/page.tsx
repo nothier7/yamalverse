@@ -8,15 +8,61 @@ export default function HonoursPage() {
 
   const individualHonours = [
     {
-      title: 'UEFA U17 Team of the Tournament',
+      title: 'Golden Boy',
+      times: 1,
+      seasons: ['2024'],
+    },
+    {
+      title: 'Kopa Trophy',
+      times: 1,
+      seasons: ['2024'],
+    },
+    {
+      title: 'UEFA EURO Young PLayer of the Tournament',
+      times: 1,
+      seasons: ['2024'],
+    },
+        {
+      title: 'La Liga Team of the Season',
+      times: 1,
+      seasons: ['2024/25'],
+    },
+    {
+      title: 'UEFA Champions League Team of the Season',
+      times: 1,
+      seasons: ['2024/25'],
+    },
+    {
+      title: 'UEFA EURO Goal of the Tournament',
+      times: 1,
+      seasons: ['2024'],
+    },
+    {
+      title: 'La Liga U23 Player of the Season',
+      times: 2,
+      seasons: ['2023/24', '2024/25'],
+    },
+    {
+      title: "IFFHS Men's World's Best Youth Player",
+      times: 1,
+      seasons: ['2024'],
+    },
+    {
+      title: "The Best FIFA Men's 11",
+      times: 1,
+      seasons: ['2024'],
+    },
+    {
+      title: 'Tuttosport The Youngest Award',
       times: 1,
       seasons: ['2023'],
     },
     {
-      title: 'La Liga Young Player of the Month',
+      title: 'Laureus World Sports Award for Breakthrough of the Year',
       times: 1,
-      seasons: ['March 2024'],
+      seasons: ['2025'],
     },
+    
   ];
 
   const teamHonours = [
