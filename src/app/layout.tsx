@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Yamalverse",
   description: "All Stats and Data about Lamine Yamal. Lamine Yamal goals, assists, appearances, trophies, and more.",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
