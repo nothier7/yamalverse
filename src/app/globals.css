@@ -2,25 +2,30 @@
 
 /* globals.css */
 
-/* globals.css */
-
 body, html {
   min-height: 100vh;
   background: #070b42;
   color: white;
-  position: relative;
-  overflow: auto;
   scroll-behavior: smooth;
+
+  /* Removed problematic styles */
+  /* position: relative; */
+  /* overflow: hidden; */
 }
 
 /* Stronger, tiled noise */
 body::before {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: fixed; /* <-- makes it stick to the viewport */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background-image: url('/cartographer.png');
   background-size: 350px 350px;
+  background-repeat: repeat;
   opacity: 0.9;
   z-index: 0;
   pointer-events: none;
 }
+

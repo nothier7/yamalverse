@@ -17,7 +17,7 @@ const Navbar = () => {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/60 backdrop-blur-xl transition-all duration-200 ease-out px-6 py-4">
+    <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-black/30 backdrop-blur-xl transition-all duration-200 ease-out px-6 py-4">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
         <Link href="/" className="flex items-center gap-2" aria-label="Yamalverse Home">
           <Image
