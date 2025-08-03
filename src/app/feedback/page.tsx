@@ -33,7 +33,7 @@ const FeedbackPage = () => {
 
   return (
     <div className="relative z-10 flex flex-col items-center gap-6 py-10 max-w-2xl mx-auto px-4">
-      <h1 className="text-2xl font-bold text-white">We'd love your feedback</h1>
+      <h1 className="text-2xl font-bold text-white">We&apos;d love your feedback</h1>
       <p className="text-neutral-400 text-sm text-center">
         Found a bug? Got a feature idea? Just want to say hi? Drop it below.
       </p>
