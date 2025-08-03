@@ -9,8 +9,8 @@ type StatsCardProps = {
   assists: number;
   goals: number;
   contributions: number;
-  minutesPerGoal: number;
-  minutesPerContribution: number;
+  minutesPerGoal?: number;
+  minutesPerContribution?: number;
 };
 
 const StatBox = ({ label, value }: { label: string; value: number }) => (
@@ -40,8 +40,12 @@ const StatsCard: React.FC<StatsCardProps> = ({
         <StatBox label="Assists" value={assists} />
         <StatBox label="Goals" value={goals} />
         <StatBox label="G + A" value={contributions} />
-        <StatBox label="Min / Goal" value={minutesPerGoal} />
-        <StatBox label="Min / Contribution" value={minutesPerContribution} />
+        {typeof minutesPerGoal === 'number' && (
+      <StatBox label="Min / Goal" value={minutesPerGoal} />
+      )}
+      {typeof minutesPerContribution === 'number' && (
+    <StatBox label="Min / Contribution" value={minutesPerContribution} />
+    )}
       </div>
     </div>
   );
