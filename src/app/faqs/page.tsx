@@ -12,7 +12,7 @@ const faqs = [
     answer: 'Match stats are updated within 24 hours after each game played by Lamine Yamal.',
   },
   {
-    question: 'Do you track data for frienly matches?',
+    question: 'Do you track data for friendly matches?',
     answer: 'We do track data for International friendlies, but not for club friendlies. Only competitive matches are included in the stats.',
   },
   {
