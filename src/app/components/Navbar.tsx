@@ -70,6 +70,7 @@ const Navbar = () => {
               { label: 'International', href: '/international' },
               { label: 'Per 90', href: '/per90' },
               { label: 'Dribbles', href: '/dribbles' },
+              { label: 'Opponents', href: '/opponents' },
             ]}
           />
 
