@@ -1,7 +1,12 @@
 "use client";
+
 import type { OpponentContrib } from "../../lib/queries/getOpponentContribs";
 
 export default function OpponentsTable({ rows }: { rows: OpponentContrib[] }) {
+  if (!rows?.length) {
+    return <div className="opacity-70">No opponents found.</div>;
+  }
+
   return (
     <div className="overflow-x-auto rounded-2xl shadow-lg bg-white/5 backdrop-blur-md border border-white/10">
       <table className="w-full text-left">
