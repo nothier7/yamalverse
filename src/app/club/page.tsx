@@ -42,7 +42,7 @@ export default function ClubPage() {
     getFilteredStats(queries).then(setStats);
   }, [selectedFilter]);
 
-  const seasons = ['2022/23', '2023/24', '2024/25'];
+  const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
   const years = [2023, 2024, 2025];
 
   return (
