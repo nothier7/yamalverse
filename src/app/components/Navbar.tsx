@@ -69,6 +69,7 @@ const Navbar = () => {
               { label: 'Club Stats', href: '/club' },
               { label: 'International', href: '/international' },
               { label: 'Per 90', href: '/per90' },
+              { label: 'Progression', href: '/progression' },
               { label: 'Dribbles', href: '/dribbles' },
               { label: 'Opponents', href: '/opponents' },
             ]}
