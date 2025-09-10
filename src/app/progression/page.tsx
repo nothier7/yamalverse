@@ -5,6 +5,24 @@ import supabase from '../lib/supabaseClient';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import StatsFilterBar from '../components/StatsFilterBar';
 
+// Custom display labels for competitions
+const COMPETITION_LABELS: Record<string, string> = {
+  'La Liga': 'La Liga',
+  'Copa del Rey': 'Copa del Rey',
+  'Champions Lg': 'Champions League',
+  'Supercopa de Espana': 'Spanish Super Cup',
+  'UEFA Euro Qualifying': 'EURO Qualifiers',
+  'UEFA Euro': 'EURO',
+  'Friendlies (M)': 'Friendlies',
+  'UEFA Nations League': 'Nations League',
+  'World Cup': 'World Cup',
+};
+
+function compLabel(raw: string | null | undefined): string {
+  if (!raw) return '—';
+  return COMPETITION_LABELS[raw] ?? raw;
+}
+
 type MatchRow = {
   date: string; // ISO
   season: string | null;
@@ -279,7 +297,7 @@ export default function ProgressionPage() {
         idx: i + 1,
         date: r.date,
         opponent: r.opponent ?? null,
-        competition: r.competition ?? null,
+        competition: compLabel(r.competition ?? undefined),
         goals: cumGoals,
         assists: cumAssists,
         ga: cumGA,
@@ -354,9 +372,9 @@ export default function ProgressionPage() {
                     ? 'bg-white/20 border-white/20 text-white'
                     : 'bg-white/5 border-white/10 text-neutral-200 hover:bg-white/10',
                 ].join(' ')}
-                title={c}
+                title={compLabel(c)}
               >
-                {c}
+                {compLabel(c)}
               </button>
             );
           })}
