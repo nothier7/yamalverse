@@ -38,6 +38,18 @@ export default function RootLayout({
         <Navbar/>
         {children}
         <Analytics />
+        <script 
+          data-name="BMC-Widget" 
+          data-cfasync="false" 
+          src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" 
+          data-id="yamalverse" 
+          data-description="Support Yamalverse on Buy Me a Coffee!" 
+          data-message="Love the stats? Support Yamalverse and help it grow 💜" 
+          data-color="#BD5FFF" 
+          data-position="Right" 
+          data-x_margin="18" 
+          data-y_margin="18">
+        </script>
       </body>
     </html>
   );
