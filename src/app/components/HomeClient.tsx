@@ -204,7 +204,7 @@ export default function HomeClient() {
                 Compare output across possession phases, gauge usage, and identify spikes in form.
               </p>
               <span className="text-xs font-semibold text-indigo-200/80">
-                View radar ->
+                View radar →
               </span>
             </div>
           </Link>
@@ -220,7 +220,7 @@ export default function HomeClient() {
                 Understand how his influence shifts by opponent profile and defensive scheme.
               </p>
               <span className="text-xs font-semibold text-indigo-200/80">
-                Explore matchups ->
+                Explore matchups →
               </span>
             </div>
           </Link>
@@ -236,7 +236,7 @@ export default function HomeClient() {
                 Track trophies, awards, and milestone appearances as his career accelerates.
               </p>
               <span className="text-xs font-semibold text-indigo-200/80">
-                Review accolades ->
+                Review accolades →
               </span>
             </div>
           </Link>
