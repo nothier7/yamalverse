@@ -15,6 +15,11 @@ export default function StatsFilterBar({
   availableSeasons,
   availableYears
 }: StatsFilterBarProps) {
+  const optionStyle: React.CSSProperties = {
+    backgroundColor: '#0b1040',
+    color: '#ffffff',
+  };
+
   return (
     <div className="flex items-center gap-4 flex-wrap text-white mb-6">
       <select
@@ -23,12 +28,13 @@ export default function StatsFilterBar({
           const val = e.target.value;
           if (val) onChange({ type: 'season', value: val });
         }}
-        className="bg-white/10 text-white p-2 rounded disabled:opacity-40"
+        className="bg-slate-950/80 text-white border border-white/15 p-2 rounded backdrop-blur focus:outline-none focus:ring-2 focus:ring-indigo-400/60 disabled:opacity-40"
+        style={{ colorScheme: 'dark' }}
         disabled={selectedFilter?.type === 'year'}
       >
         <option value="">Select Season</option>
         {availableSeasons.map((season) => (
-          <option key={season} value={season}>{season}</option>
+          <option key={season} value={season} style={optionStyle}>{season}</option>
         ))}
       </select>
 
@@ -38,12 +44,13 @@ export default function StatsFilterBar({
           const val = e.target.value;
           if (val) onChange({ type: 'year', value: Number(val) });
         }}
-        className="bg-white/10 text-white p-2 rounded disabled:opacity-40"
+        className="bg-slate-950/80 text-white border border-white/15 p-2 rounded backdrop-blur focus:outline-none focus:ring-2 focus:ring-indigo-400/60 disabled:opacity-40"
+        style={{ colorScheme: 'dark' }}
         disabled={selectedFilter?.type === 'season'}
       >
         <option value="">Select Year</option>
         {availableYears.map((year) => (
-          <option key={year} value={year}>{year}</option>
+          <option key={year} value={year} style={optionStyle}>{year}</option>
         ))}
       </select>
 

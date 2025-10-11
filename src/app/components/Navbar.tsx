@@ -60,7 +60,7 @@ const Navbar = () => {
             href="/"
             className={`${navLink} ${pathname === '/' ? 'text-white font-semibold underline underline-offset-4' : ''}`}
           >
-            All Time
+            Home
           </Link>
 
           <Dropdown

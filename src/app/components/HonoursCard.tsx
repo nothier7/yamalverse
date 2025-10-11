@@ -12,9 +12,9 @@ const HonoursCard: React.FC<HonoursCardProps> = ({
   subtitle,
 }) => {
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-6 w-full max-w-md shadow-md backdrop-blur-md">
+    <div className="w-full max-w-md rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/60 via-slate-900/40 to-slate-950/65 px-8 py-6 shadow-[0_18px_40px_-30px_rgba(0,0,0,0.9)] backdrop-blur">
       <h3 className="text-2xl font-semibold text-white">{title}</h3>
-      {subtitle && <p className="text-sm text-neutral-400 ">{subtitle}</p>}
+      {subtitle && <p className="text-sm text-neutral-300/80">{subtitle}</p>}
     </div>
   );
 };
