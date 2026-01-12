@@ -19,7 +19,7 @@ const DribblesCard = ({
   dribbles_attempted,
   dribbles_per_90,
   success_rate,
-}) => {
+}: DribblesCardProps) => {
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl p-6 w-full max-w-md shadow-md backdrop-blur-md">
       <h3 className="text-xl font-semibold text-white">{title}</h3>
