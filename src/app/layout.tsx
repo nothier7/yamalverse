@@ -48,7 +48,9 @@ export default function RootLayout({
           data-color="#BD5FFF" 
           data-position="Right" 
           data-x_margin="18" 
-          data-y_margin="18">
+          data-y_margin="18"
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer">
         </script>
       </body>
     </html>

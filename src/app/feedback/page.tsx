@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import createClient from '../lib/supabaseClient';
+import supabase from '../lib/supabaseClient';
 
 const FeedbackPage = () => {
-  const supabase = createClient;
 
   const [type, setType] = useState('Feature Request');
   const [message, setMessage] = useState('');
@@ -14,20 +13,45 @@ const FeedbackPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic input validation
+    if (!message.trim()) {
+      alert('Please enter a message.');
+      return;
+    }
+
+    // Email validation if provided
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    // Sanitize inputs
+    const sanitizedType = type.trim();
+    const sanitizedMessage = message.trim();
+    const sanitizedEmail = email.trim() || null;
+
     setLoading(true);
 
-    const { error } = await supabase.from('feedback').insert([
-      { type, message, email: email || null },
-    ]);
+    try {
+      const { error } = await supabase.from('feedback').insert([
+        { type: sanitizedType, message: sanitizedMessage, email: sanitizedEmail },
+      ]);
 
-    setLoading(false);
+      if (error) {
+        console.error('Feedback submission error:', error);
+        alert('Something went wrong. Try again later.');
+        return;
+      }
 
-    if (!error) {
       setSubmitted(true);
       setMessage('');
       setEmail('');
-    } else {
+    } catch (err) {
+      console.error('Unexpected error submitting feedback:', err);
       alert('Something went wrong. Try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 

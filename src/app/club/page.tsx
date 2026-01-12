@@ -24,13 +24,24 @@ export default function ClubPage() {
     Copa: null,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    if (!selectedFilter) {
+      setStats({
+        club: null,
+        championsLeague: null,
+        Liga: null,
+        Copa: null,
+      });
+      return;
+    }
+
     const filterParams =
-      selectedFilter?.type === 'season'
+      selectedFilter.type === 'season'
         ? { season: String(selectedFilter.value) }
-        : selectedFilter?.type === 'year'
-        ? { year: Number(selectedFilter.value) }
-        : {};
+        : { year: Number(selectedFilter.value) };
 
     const queries = [
       { key: 'club', args: { type: 'Club', ...filterParams } },
@@ -39,7 +50,18 @@ export default function ClubPage() {
       { key: 'championsLeague', args: { competition: 'Champions Lg', ...filterParams } },
     ] as const;
 
-    getFilteredStats(queries).then(setStats);
+    setLoading(true);
+    setError(null);
+
+    getFilteredStats(queries)
+      .then(setStats)
+      .catch((err) => {
+        console.error('Error fetching club stats:', err);
+        setError('Failed to load stats. Please try again.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [selectedFilter]);
 
   const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
@@ -59,6 +81,16 @@ export default function ClubPage() {
         availableSeasons={seasons}
         availableYears={years}
       />
+
+      {loading && (
+        <div className="text-neutral-300">Loading stats...</div>
+      )}
+
+      {error && (
+        <div className="bg-red-500/10 border border-red-400/40 p-4 rounded-lg text-red-100">
+          {error}
+        </div>
+      )}
 
       {stats.club && (
         <StatsCard title="Club Stats" subtitle="Excluding friendlies" {...stats.club} />

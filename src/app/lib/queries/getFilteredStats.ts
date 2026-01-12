@@ -18,8 +18,8 @@ export async function getFilteredStats<
   const output = {} as { [K in T[number]['key']]: YamalStats | null };
 
   queries.forEach((q, i) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (output as any)[q.key] = results[i];
+    // Type-safe assignment using keyof
+    (output as Record<string, YamalStats | null>)[q.key] = results[i];
   });
 
   return output;

@@ -235,40 +235,60 @@ export default function ProgressionPage() {
 
   // Load available competitions (distinct)
   const loadMeta = useCallback(async () => {
-    const { data } = await supabase
-      .from('yamal_matches')
-      .select('competition, season, year');
-    const comps = Array.from(new Set((data || []).map((r) => r.competition).filter(Boolean))) as string[];
-    // seasons / years for dropdowns (fallbacks if empty)
-    const seasons = Array.from(new Set((data || []).map((r) => r.season).filter(Boolean))) as string[];
-    const years = Array.from(new Set((data || []).map((r) => r.year).filter(Boolean))) as number[];
-    setCompetitions(comps.sort());
-    // If StatsFilterBar needs available lists, we compute below
-    setAvailableSeasons(seasons.length ? seasons.sort() : ['2023/24', '2024/25']);
-    setAvailableYears(years.length ? years.sort() : [2023, 2024, 2025]);
+    try {
+      const { data, error } = await supabase
+        .from('yamal_matches')
+        .select('competition, season, year');
+      
+      if (error) {
+        console.error('Error loading metadata:', error);
+        return;
+      }
+
+      const comps = Array.from(new Set((data || []).map((r) => r.competition).filter(Boolean))) as string[];
+      // seasons / years for dropdowns (fallbacks if empty)
+      const seasons = Array.from(new Set((data || []).map((r) => r.season).filter(Boolean))) as string[];
+      const years = Array.from(new Set((data || []).map((r) => r.year).filter(Boolean))) as number[];
+      setCompetitions(comps.sort());
+      // If StatsFilterBar needs available lists, we compute below
+      setAvailableSeasons(seasons.length ? seasons.sort() : ['2023/24', '2024/25']);
+      setAvailableYears(years.length ? years.sort() : [2023, 2024, 2025]);
+    } catch (err) {
+      console.error('Unexpected error loading metadata:', err);
+    }
   }, []);
 
   // Load rows based on filters
   const loadRows = useCallback(async () => {
     setLoading(true);
-    let query = supabase
-      .from('yamal_matches')
-      .select('date, season, year, competition, opponent, goals, assists, take_ons_attempted, take_ons_successful')
-      .order('date', { ascending: true });
+    try {
+      let query = supabase
+        .from('yamal_matches')
+        .select('date, season, year, competition, opponent, goals, assists, take_ons_attempted, take_ons_successful')
+        .order('date', { ascending: true });
 
-    if (selectedFilter?.type === 'season') query = query.eq('season', selectedFilter.value as string);
-    if (selectedFilter?.type === 'year') query = query.eq('year', selectedFilter.value as number);
-    if (selectedComps.length > 0) query = query.in('competition', selectedComps);
+      if (selectedFilter?.type === 'season') query = query.eq('season', selectedFilter.value as string);
+      if (selectedFilter?.type === 'year') query = query.eq('year', selectedFilter.value as number);
+      if (selectedComps.length > 0) query = query.in('competition', selectedComps);
 
-    const { data, error } = await query;
-    if (!error && data) setRows(data as MatchRow[]);
-    else setRows([]);
-    setLoading(false);
+      const { data, error } = await query;
+      if (error) {
+        console.error('Error loading rows:', error);
+        setRows([]);
+        return;
+      }
+      setRows((data || []) as MatchRow[]);
+    } catch (err) {
+      console.error('Unexpected error loading rows:', err);
+      setRows([]);
+    } finally {
+      setLoading(false);
+    }
   }, [selectedFilter, selectedComps]);
 
   useEffect(() => {
     loadMeta();
-  }, []);
+  }, [loadMeta]);
 
   useEffect(() => {
     loadRows();

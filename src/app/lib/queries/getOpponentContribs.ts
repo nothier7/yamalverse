@@ -1,5 +1,5 @@
 // /lib/queries/getOpponentContribs.ts
-import { createClient } from "@supabase/supabase-js";
+import supabase from '../supabaseClient';
 
 export type OpponentContrib = {
   opponent: string;
@@ -17,13 +17,10 @@ type Params = {
   type?: OpponentType; // UI will map "Both" -> null at RPC
 };
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
 export async function getOpponentContribs({ season = null, year = null, type = "Both" }: Params = {}) {
-  if (season && year) throw new Error("Provide either season OR year, not both.");
+  if (season && year) {
+    throw new Error("Provide either season OR year, not both.");
+  }
 
   const p_type = type === "Both" ? null : type;
 
@@ -31,6 +28,9 @@ export async function getOpponentContribs({ season = null, year = null, type = "
     .rpc("get_yamal_opponent_contribs", { p_season: season, p_year: year, p_type })
     .returns<OpponentContrib[]>();
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
+  
   return data ?? [];
 }

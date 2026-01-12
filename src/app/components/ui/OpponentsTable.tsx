@@ -31,8 +31,9 @@ export default function OpponentsTable({ season, year }: { season?: string; year
           setErr("Unexpected response format.");
           setRows([]);
         }
-      } catch (e: any) {
-        setErr(e?.message ?? "Failed to load.");
+      } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : "Failed to load.";
+        setErr(errorMessage);
       } finally {
         setLoading(false);
       }

@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 type StatsCardProps = {
   title: string;
   subtitle?: string;
@@ -20,7 +18,7 @@ const StatBox = ({ label, value }: { label: string; value: number }) => (
   </div>
 );
 
-const StatsCard: React.FC<StatsCardProps> = ({
+const StatsCard = ({
   title,
   subtitle,
   appearances,

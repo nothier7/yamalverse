@@ -26,7 +26,14 @@ export async function getAllTimeStats(filter?: {
 
   const { data, error } = await query;
 
-  if (error || !data) return null;
+  if (error) {
+    console.error('Error fetching stats:', error);
+    return null;
+  }
+
+  if (!data) {
+    return null;
+  }
 
   const appearances = data.length;
   const goals = data.reduce((sum, row) => sum + row.goals, 0);

@@ -16,8 +16,7 @@ export default function InternationalPage() {
     intl: YamalStats | null;
     euro: YamalStats | null;
     nationsLeague: YamalStats | null;
-    euroQual : YamalStats | null;
-
+    euroQual: YamalStats | null;
   }>({
     intl: null,
     euro: null,
@@ -25,13 +24,24 @@ export default function InternationalPage() {
     euroQual: null,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    if (!selectedFilter) {
+      setStats({
+        intl: null,
+        euro: null,
+        nationsLeague: null,
+        euroQual: null,
+      });
+      return;
+    }
+
     const filterParams =
-      selectedFilter?.type === 'season'
+      selectedFilter.type === 'season'
         ? { season: String(selectedFilter.value) }
-        : selectedFilter?.type === 'year'
-        ? { year: Number(selectedFilter.value) }
-        : {};
+        : { year: Number(selectedFilter.value) };
 
     const queries = [
       { key: 'intl', args: { type: 'International', ...filterParams } },
@@ -40,7 +50,18 @@ export default function InternationalPage() {
       { key: 'euroQual', args: { competition: 'UEFA Euro Qualifying', ...filterParams } },
     ] as const;
 
-    getFilteredStats(queries).then(setStats);
+    setLoading(true);
+    setError(null);
+
+    getFilteredStats(queries)
+      .then(setStats)
+      .catch((err) => {
+        console.error('Error fetching international stats:', err);
+        setError('Failed to load stats. Please try again.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [selectedFilter]);
 
   const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
@@ -60,6 +81,16 @@ export default function InternationalPage() {
         availableSeasons={seasons}
         availableYears={years}
       />
+
+      {loading && (
+        <div className="text-neutral-300">Loading stats...</div>
+      )}
+
+      {error && (
+        <div className="bg-red-500/10 border border-red-400/40 p-4 rounded-lg text-red-100">
+          {error}
+        </div>
+      )}
 
       {stats.intl && (
         <StatsCard title="International Stats" {...stats.intl} />

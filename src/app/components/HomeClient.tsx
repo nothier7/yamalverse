@@ -34,13 +34,27 @@ export default function HomeClient() {
     euro: null,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    if (!selectedFilter) {
+      setStats({
+        allTime: null,
+        club: null,
+        intl: null,
+        championsLeague: null,
+        Liga: null,
+        Copa: null,
+        euro: null,
+      });
+      return;
+    }
+
     const filterParams =
-      selectedFilter?.type === 'season'
+      selectedFilter.type === 'season'
         ? { season: String(selectedFilter.value) }
-        : selectedFilter?.type === 'year'
-        ? { year: Number(selectedFilter.value) }
-        : {};
+        : { year: Number(selectedFilter.value) };
 
     const queries = [
       { key: 'allTime', args: { ...filterParams } },
@@ -52,17 +66,28 @@ export default function HomeClient() {
       { key: 'euro', args: { competition: 'UEFA Euro', ...filterParams } },
     ] as const;
 
-    getFilteredStats(queries).then((result) => {
-      setStats(result as {
-        allTime: YamalStats | null;
-        club: YamalStats | null;
-        intl: YamalStats | null;
-        championsLeague: YamalStats | null;
-        Liga: YamalStats | null;
-        Copa: YamalStats | null;
-        euro: YamalStats | null;
+    setLoading(true);
+    setError(null);
+
+    getFilteredStats(queries)
+      .then((result) => {
+        setStats(result as {
+          allTime: YamalStats | null;
+          club: YamalStats | null;
+          intl: YamalStats | null;
+          championsLeague: YamalStats | null;
+          Liga: YamalStats | null;
+          Copa: YamalStats | null;
+          euro: YamalStats | null;
+        });
+      })
+      .catch((err) => {
+        console.error('Error fetching stats:', err);
+        setError('Failed to load stats. Please try again.');
+      })
+      .finally(() => {
+        setLoading(false);
       });
-    });
   }, [selectedFilter]);
 
   const snapshotTitle = selectedFilter
@@ -138,7 +163,15 @@ export default function HomeClient() {
         </div>
 
         {selectedFilter ? (
-          stats.allTime ? (
+          loading ? (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-neutral-200/80">
+              Loading stats...
+            </div>
+          ) : error ? (
+            <div className="rounded-2xl border border-red-400/40 bg-red-500/10 p-6 text-red-100">
+              {error}
+            </div>
+          ) : stats.allTime ? (
             <div className="flex flex-col gap-6 lg:flex-row">
               <StatsCard
                 title={`${snapshotTitle} Overview`}

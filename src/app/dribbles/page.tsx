@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import createClient from '../lib/supabaseClient';
+import supabase from '../lib/supabaseClient';
 import StatsFilterBar from '../components/StatsFilterBar';
 import DribblesCard from '../components/DribblesCard';
 
@@ -32,7 +32,6 @@ const COMPETITION_TITLES: Record<string, string> = {
 };
 
 export default function DribblesPage() {
-  const supabase = createClient;
 
   const [selectedFilter, setSelectedFilter] = useState<{
     type: 'season' | 'year';
@@ -41,56 +40,89 @@ export default function DribblesPage() {
 
   const [dribbles, setDribbles] = useState<DribbleStats[]>([]);
   const [record, setRecord] = useState<RecordType>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = async () => {
-    const params = {
-      season_input: selectedFilter?.type === 'season' ? String(selectedFilter.value) : null,
-      year_input: selectedFilter?.type === 'year' ? Number(selectedFilter.value) : null,
-    };
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const params = {
+        season_input: selectedFilter?.type === 'season' ? String(selectedFilter.value) : null,
+        year_input: selectedFilter?.type === 'year' ? Number(selectedFilter.value) : null,
+      };
 
-    const { data: dribbleStats } = await supabase.rpc('get_dribbles_by_competition', params);
-    const { data: recordData } = await supabase.rpc('get_dribble_record_game', params);
+      const { data: dribbleStats, error: dribbleError } = await supabase.rpc('get_dribbles_by_competition', params);
+      const { data: recordData, error: recordError } = await supabase.rpc('get_dribble_record_game', params);
 
-    const filteredStats = (dribbleStats || []).filter(
-      (stat: DribbleStats) => stat.dribbles_attempted > 0
-    );
-
-    const total = filteredStats.reduce(
-      (
-        acc: { dribbles_completed: number; dribbles_attempted: number; total_minutes: number },
-        curr: DribbleStats
-      ) => {
-        acc.dribbles_completed += curr.dribbles_completed;
-        acc.dribbles_attempted += curr.dribbles_attempted;
-        acc.total_minutes += curr.dribbles_completed / (curr.dribbles_per_90 || 1) * 90;
-        return acc;
-      },
-      {
-        dribbles_completed: 0,
-        dribbles_attempted: 0,
-        total_minutes: 0,
+      // Handle errors from RPC calls
+      if (dribbleError) {
+        console.error('Error fetching dribble stats:', dribbleError);
+        throw new Error(`Failed to load dribble stats: ${dribbleError.message || 'Unknown error'}`);
       }
-    );
+      
+      if (recordError) {
+        console.error('Error fetching dribble record:', recordError);
+        // Record error is non-critical, so we log but don't throw
+        // We'll just show dribble stats without the record
+      }
 
-    const totalCard: DribbleStats = {
-      competition: 'All Competitions',
-      dribbles_completed: total.dribbles_completed,
-      dribbles_attempted: total.dribbles_attempted,
-      dribbles_per_90: total.total_minutes
-        ? parseFloat((total.dribbles_completed / total.total_minutes * 90).toFixed(2))
-        : 0,
-      success_rate: total.dribbles_attempted
-        ? parseFloat((total.dribbles_completed / total.dribbles_attempted * 100).toFixed(1))
-        : 0,
-    };
+      const filteredStats = (dribbleStats || []).filter(
+        (stat: DribbleStats) => stat.dribbles_attempted > 0
+      );
 
-    setDribbles([totalCard, ...filteredStats]);
-    setRecord(recordData?.[0] || null);
+      const total = filteredStats.reduce(
+        (
+          acc: { dribbles_completed: number; dribbles_attempted: number; total_minutes: number },
+          curr: DribbleStats
+        ) => {
+          acc.dribbles_completed += curr.dribbles_completed;
+          acc.dribbles_attempted += curr.dribbles_attempted;
+          acc.total_minutes += curr.dribbles_completed / (curr.dribbles_per_90 || 1) * 90;
+          return acc;
+        },
+        {
+          dribbles_completed: 0,
+          dribbles_attempted: 0,
+          total_minutes: 0,
+        }
+      );
+
+      const totalCard: DribbleStats = {
+        competition: 'All Competitions',
+        dribbles_completed: total.dribbles_completed,
+        dribbles_attempted: total.dribbles_attempted,
+        dribbles_per_90: total.total_minutes
+          ? parseFloat((total.dribbles_completed / total.total_minutes * 90).toFixed(2))
+          : 0,
+        success_rate: total.dribbles_attempted
+          ? parseFloat((total.dribbles_completed / total.dribbles_attempted * 100).toFixed(1))
+          : 0,
+      };
+
+      setDribbles([totalCard, ...filteredStats]);
+      setRecord(recordData?.[0] || null);
+      setLoading(false);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load dribble stats. Please try again.';
+      setError(errorMessage);
+      setLoading(false);
+      // Clear data on error
+      setDribbles([]);
+      setRecord(null);
+      throw err; // Re-throw so the catch handler in useEffect can also handle it
+    }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData().catch((err) => {
+      console.error('Error fetching dribble data:', err);
+      setError('Failed to load dribble stats. Please try again.');
+      setLoading(false);
+    });
   }, [selectedFilter]);
+
 
   const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
   const years = [2023, 2024, 2025];
@@ -109,6 +141,16 @@ export default function DribblesPage() {
         availableSeasons={seasons}
         availableYears={years}
       />
+
+      {error && (
+        <div className="bg-red-500/10 border border-red-400/40 p-4 rounded-lg text-red-100 max-w-md w-full">
+          {error}
+        </div>
+      )}
+
+      {loading && (
+        <div className="text-neutral-300">Loading dribble stats...</div>
+      )}
 
       {record && (
         <div className="bg-yellow-100/10 border-l-4 border-yellow-500 p-4 rounded-lg text-white max-w-md w-full shadow">

@@ -1,5 +1,3 @@
-import React from 'react';
-
 type DribblesCardProps = {
   title: string;
   dribbles_completed: number;
@@ -15,7 +13,7 @@ const StatBox = ({ label, value }: { label: string; value: number | string }) =>
   </div>
 );
 
-const DribblesCard: React.FC<DribblesCardProps> = ({
+const DribblesCard = ({
   title,
   dribbles_completed,
   dribbles_attempted,

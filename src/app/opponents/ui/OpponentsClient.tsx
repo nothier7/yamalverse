@@ -22,8 +22,9 @@ export default function OpponentsClient() {
         setErr(null);
         const data = await getOpponentContribs({ season: safe.season, year: safe.year, type: safe.type });
         setRows(Array.isArray(data) ? data : []);
-      } catch (e: any) {
-        setErr(e?.message ?? "Failed to load.");
+      } catch (e) {
+        const errorMessage = e instanceof Error ? e.message : "Failed to load.";
+        setErr(errorMessage);
       } finally {
         setLoading(false);
       }
