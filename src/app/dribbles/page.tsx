@@ -33,7 +33,7 @@ const COMPETITION_TITLES: Record<string, string> = {
 
 // Hoist static constants outside component (rendering-hoist-jsx)
 const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
-const years = [2023, 2024, 2025];
+const years = [2023, 2024, 2025, 2026];
 
 export default function DribblesPage() {
 
