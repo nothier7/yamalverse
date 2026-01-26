@@ -2,9 +2,26 @@
 
 import { useEffect, useState } from 'react';
 import { Per90Stats } from '../types/stats';
-import { getPer90Stats } from '../lib/queries/getPer90Stats'; // you’ll create this
+import { getPer90Stats } from '../lib/queries/getPer90Stats';
 import StatsCard from '../components/StatsCard';
 import StatsFilterBar from '../components/StatsFilterBar';
+
+// Hoist static constants outside component (rendering-hoist-jsx)
+const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
+const years = [2023, 2024, 2025, 2026];
+
+// Extract Per90StatsCard to avoid IIFE pattern (rendering-hoist-jsx)
+function Per90StatsCard({ title, stats }: { title: string; stats: Per90Stats }) {
+  return (
+    <StatsCard
+      title={title}
+      appearances={stats.appearances}
+      assists={stats.assists_per90}
+      goals={stats.goals_per90}
+      contributions={stats.ga_per90}
+    />
+  );
+}
 
 export default function Per90Page() {
   const [selectedFilter, setSelectedFilter] = useState<{
@@ -45,9 +62,6 @@ export default function Per90Page() {
     getPer90Stats(queries).then(setStats);
   }, [selectedFilter]);
 
-  const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
-  const years = [2023, 2024, 2025];
-
   return (
     <div className="relative z-10 flex flex-col items-center gap-6 py-10">
       <h1 className="text-2xl font-bold text-white">
@@ -63,71 +77,12 @@ export default function Per90Page() {
         availableYears={years}
       />
 
-      {stats.Liga && (() => {
-  const s = stats.Liga;
-  return (
-    <StatsCard
-      title="La Liga Per 90"
-      appearances={s.appearances}
-      assists={s.assists_per90}
-      goals={s.goals_per90}
-      contributions={s.ga_per90}
-    />
-  );
-})()}
-
-{stats.Copa && (() => {
-  const s = stats.Copa;
-  return (
-    <StatsCard
-      title="Copa del Rey Per 90"
-      appearances={s.appearances}
-      assists={s.assists_per90}
-      goals={s.goals_per90}
-      contributions={s.ga_per90}
-    />
-  );
-})()}
-
-{stats.championsLeague && (() => {
-  const s = stats.championsLeague;
-  return (
-    <StatsCard
-      title="UCL Per 90"
-      appearances={s.appearances}
-      assists={s.assists_per90}
-      goals={s.goals_per90}
-      contributions={s.ga_per90}
-    />
-  );
-})()}
-
-{stats.SpanishSuperCup && (() => {
-  const s = stats.SpanishSuperCup;
-  return (
-    <StatsCard
-      title="Spanish SuperCup Per 90"
-      appearances={s.appearances}
-      assists={s.assists_per90}
-      goals={s.goals_per90}
-      contributions={s.ga_per90}
-    />
-  );
-})()}
-
-{stats.EURO && (() => {
-  const s = stats.EURO;
-  return (
-    <StatsCard
-      title="UEFA EURO Per 90"
-      appearances={s.appearances}
-      assists={s.assists_per90}
-      goals={s.goals_per90}
-      contributions={s.ga_per90}
-    />
-  );
-})()}
-
+      {/* Use explicit ternary for conditional rendering (rendering-conditional-render) */}
+      {stats.Liga ? <Per90StatsCard title="La Liga Per 90" stats={stats.Liga} /> : null}
+      {stats.Copa ? <Per90StatsCard title="Copa del Rey Per 90" stats={stats.Copa} /> : null}
+      {stats.championsLeague ? <Per90StatsCard title="UCL Per 90" stats={stats.championsLeague} /> : null}
+      {stats.SpanishSuperCup ? <Per90StatsCard title="Spanish SuperCup Per 90" stats={stats.SpanishSuperCup} /> : null}
+      {stats.EURO ? <Per90StatsCard title="UEFA EURO Per 90" stats={stats.EURO} /> : null}
     </div>
   );
 }

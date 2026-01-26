@@ -7,6 +7,7 @@ import StatsFilterBar from '../components/StatsFilterBar';
 import { YamalStats } from '../types/stats';
 import { getFilteredStats } from '../lib/queries/getFilteredStats';
 
+// Hoist static constants outside component (rendering-hoist-jsx)
 const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
 const years = [2023, 2024, 2025];
 

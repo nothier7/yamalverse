@@ -1,3 +1,7 @@
+'use client';
+
+import StatBox from './ui/StatBox';
+
 type DribblesCardProps = {
   title: string;
   dribbles_completed: number;
@@ -5,13 +9,6 @@ type DribblesCardProps = {
   dribbles_per_90: number;
   success_rate: number;
 };
-
-const StatBox = ({ label, value }: { label: string; value: number | string }) => (
-  <div className="flex flex-col items-center bg-white/5 border border-white/10 rounded-md p-3">
-    <span className="text-xl font-semibold text-white">{value}</span>
-    <span className="text-xs text-neutral-400">{label}</span>
-  </div>
-);
 
 const DribblesCard = ({
   title,

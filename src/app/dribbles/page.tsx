@@ -31,6 +31,10 @@ const COMPETITION_TITLES: Record<string, string> = {
   'World Cup': 'World Cup',
 };
 
+// Hoist static constants outside component (rendering-hoist-jsx)
+const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
+const years = [2023, 2024, 2025];
+
 export default function DribblesPage() {
 
   const [selectedFilter, setSelectedFilter] = useState<{
@@ -68,26 +72,27 @@ export default function DribblesPage() {
         // We'll just show dribble stats without the record
       }
 
-      const filteredStats = (dribbleStats || []).filter(
-        (stat: DribbleStats) => stat.dribbles_attempted > 0
-      );
+      // Combine filter and reduce into single iteration (js-combine-iterations)
+      const allStats = dribbleStats || [];
+      const filteredStats: DribbleStats[] = [];
+      let totalCompleted = 0;
+      let totalAttempted = 0;
+      let totalMinutes = 0;
 
-      const total = filteredStats.reduce(
-        (
-          acc: { dribbles_completed: number; dribbles_attempted: number; total_minutes: number },
-          curr: DribbleStats
-        ) => {
-          acc.dribbles_completed += curr.dribbles_completed;
-          acc.dribbles_attempted += curr.dribbles_attempted;
-          acc.total_minutes += curr.dribbles_completed / (curr.dribbles_per_90 || 1) * 90;
-          return acc;
-        },
-        {
-          dribbles_completed: 0,
-          dribbles_attempted: 0,
-          total_minutes: 0,
+      for (const stat of allStats) {
+        if (stat.dribbles_attempted > 0) {
+          filteredStats.push(stat);
+          totalCompleted += stat.dribbles_completed;
+          totalAttempted += stat.dribbles_attempted;
+          totalMinutes += stat.dribbles_completed / (stat.dribbles_per_90 || 1) * 90;
         }
-      );
+      }
+
+      const total = {
+        dribbles_completed: totalCompleted,
+        dribbles_attempted: totalAttempted,
+        total_minutes: totalMinutes,
+      };
 
       const totalCard: DribbleStats = {
         competition: 'All Competitions',
@@ -122,10 +127,6 @@ export default function DribblesPage() {
       setLoading(false);
     });
   }, [selectedFilter]);
-
-
-  const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
-  const years = [2023, 2024, 2025];
 
   return (
     <div className="relative z-10 flex flex-col items-center gap-6 py-10">

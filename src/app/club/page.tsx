@@ -6,6 +6,10 @@ import { getFilteredStats } from '../lib/queries/getFilteredStats';
 import StatsCard from '../components/StatsCard';
 import StatsFilterBar from '../components/StatsFilterBar';
 
+// Hoist static constants outside component (rendering-hoist-jsx)
+const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
+const years = [2023, 2024, 2025];
+
 export default function ClubPage() {
   const [selectedFilter, setSelectedFilter] = useState<{
     type: 'season' | 'year';
@@ -63,9 +67,6 @@ export default function ClubPage() {
         setLoading(false);
       });
   }, [selectedFilter]);
-
-  const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
-  const years = [2023, 2024, 2025];
 
   return (
     <div className="relative z-10 flex flex-col items-center gap-6 py-10">

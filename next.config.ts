@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Optimize barrel file imports - auto-transforms to direct imports at build time (bundle-barrel-imports)
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      '@headlessui/react',
+      '@radix-ui/react-dropdown-menu',
+    ],
+  },
   // Security headers
   async headers() {
     return [

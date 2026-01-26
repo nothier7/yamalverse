@@ -35,11 +35,19 @@ export async function getAllTimeStats(filter?: {
     return null;
   }
 
+  // Combine multiple iterations into single loop (js-combine-iterations)
+  let goals = 0;
+  let assists = 0;
+  let minutes = 0;
+  
+  for (const row of data) {
+    goals += row.goals;
+    assists += row.assists;
+    minutes += row.minutes;
+  }
+
   const appearances = data.length;
-  const goals = data.reduce((sum, row) => sum + row.goals, 0);
-  const assists = data.reduce((sum, row) => sum + row.assists, 0);
   const contributions = goals + assists;
-  const minutes = data.reduce((sum, row) => sum + row.minutes, 0);
 
   return {
     appearances,

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/Navbar";   
-import { Analytics } from "@vercel/analytics/next"
+import Navbar from "./components/Navbar";
+import Script from "next/script";
+import AnalyticsWrapper from "./components/AnalyticsWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,11 +38,13 @@ export default function RootLayout({
       >
         <Navbar/>
         {children}
-        <Analytics />
-        <script 
+        <AnalyticsWrapper />
+        {/* Defer third-party script loading - loads after hydration (bundle-defer-third-party) */}
+        <Script 
+          src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+          strategy="afterInteractive"
           data-name="BMC-Widget" 
           data-cfasync="false" 
-          src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" 
           data-id="yamalverse" 
           data-description="Support Yamalverse on Buy Me a Coffee!" 
           data-message="Love the stats? Support Yamalverse and help it grow 💜" 
@@ -49,9 +52,7 @@ export default function RootLayout({
           data-position="Right" 
           data-x_margin="18" 
           data-y_margin="18"
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer">
-        </script>
+        />
       </body>
     </html>
   );

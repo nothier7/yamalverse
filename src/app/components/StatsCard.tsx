@@ -1,5 +1,7 @@
 'use client';
 
+import StatBox from './ui/StatBox';
+
 type StatsCardProps = {
   title: string;
   subtitle?: string;
@@ -10,13 +12,6 @@ type StatsCardProps = {
   minutesPerGoal?: number;
   minutesPerContribution?: number;
 };
-
-const StatBox = ({ label, value }: { label: string; value: number }) => (
-  <div className="flex flex-col items-center rounded-md border border-white/15 bg-white/10 p-3 backdrop-blur">
-    <span className="text-xl font-semibold text-white">{value}</span>
-    <span className="text-xs text-neutral-400">{label}</span>
-  </div>
-);
 
 const StatsCard = ({
   title,
