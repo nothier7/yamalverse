@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 import { Menu } from '@headlessui/react';
 import { ChevronDownIcon } from 'lucide-react';
 
-const navLink = 'text-sm sm:text-sm px-2 sm:px-3 py-2 text-neutral-300 hover:text-white transition';
-const menuItem = 'block px-4 py-2 text-sm text-white hover:bg-white/10';
+const navLink = 'text-sm sm:text-sm px-2 sm:px-3 py-2 text-neutral-300 hover:text-white transition rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60';
+const menuItem = 'block px-4 py-2 text-sm text-white hover:bg-white/10 focus-visible:outline-none focus-visible:bg-white/15 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-400/60';
 
 const Dropdown = ({
   label,
@@ -17,10 +17,13 @@ const Dropdown = ({
   items: { label: string; href: string }[];
 }) => (
   <Menu as="div" className="relative inline-block text-left">
-    <Menu.Button>
+    <Menu.Button
+      aria-label={`${label} menu`}
+      className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-md"
+    >
       <span className="flex items-center gap-1 text-sm text-neutral-300 hover:text-white transition">
         {label}
-        <ChevronDownIcon className="h-4 w-4" />
+        <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
       </span>
     </Menu.Button>
     <Menu.Items>

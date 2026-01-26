@@ -23,12 +23,13 @@ export default function StatsFilterBar({
   return (
     <div className="flex items-center gap-4 flex-wrap text-white mb-6">
       <select
+        aria-label="Select season"
         value={selectedFilter?.type === 'season' ? selectedFilter.value : ''}
         onChange={(e) => {
           const val = e.target.value;
           if (val) onChange({ type: 'season', value: val });
         }}
-        className="bg-slate-950/80 text-white border border-white/15 p-2 rounded backdrop-blur focus:outline-none focus:ring-2 focus:ring-indigo-400/60 disabled:opacity-40"
+        className="bg-slate-950/80 text-white border border-white/15 p-2 rounded backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:opacity-40"
         style={{ colorScheme: 'dark' }}
         disabled={selectedFilter?.type === 'year'}
       >
@@ -39,12 +40,13 @@ export default function StatsFilterBar({
       </select>
 
       <select
+        aria-label="Select year"
         value={selectedFilter?.type === 'year' ? selectedFilter.value : ''}
         onChange={(e) => {
           const val = e.target.value;
           if (val) onChange({ type: 'year', value: Number(val) });
         }}
-        className="bg-slate-950/80 text-white border border-white/15 p-2 rounded backdrop-blur focus:outline-none focus:ring-2 focus:ring-indigo-400/60 disabled:opacity-40"
+        className="bg-slate-950/80 text-white border border-white/15 p-2 rounded backdrop-blur focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:opacity-40"
         style={{ colorScheme: 'dark' }}
         disabled={selectedFilter?.type === 'season'}
       >
@@ -57,7 +59,7 @@ export default function StatsFilterBar({
       {selectedFilter && (
         <button
           onClick={() => onChange(null)}
-          className="text-sm text-red-400 underline"
+          className="text-sm text-red-400 underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
         >
           Clear Filter
         </button>

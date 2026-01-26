@@ -9,10 +9,25 @@ body, html {
   background: #070b42;
   color: white;
   scroll-behavior: smooth;
+  touch-action: manipulation; /* Prevent double-tap zoom delay on mobile */
+  -webkit-tap-highlight-color: transparent; /* Intentional tap highlight removal */
 
   /* Removed problematic styles */
   /* position: relative; */
   /* overflow: hidden; */
+}
+
+/* Honor prefers-reduced-motion for users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Stronger, tiled noise */

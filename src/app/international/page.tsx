@@ -84,7 +84,7 @@ export default function InternationalPage() {
       />
 
       {loading && (
-        <div className="text-neutral-300">Loading stats...</div>
+        <div className="text-neutral-300" aria-live="polite">Loading stats…</div>
       )}
 
       {error && (

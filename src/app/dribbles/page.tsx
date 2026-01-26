@@ -150,7 +150,7 @@ export default function DribblesPage() {
       )}
 
       {loading && (
-        <div className="text-neutral-300">Loading dribble stats...</div>
+        <div className="text-neutral-300" aria-live="polite">Loading dribble stats…</div>
       )}
 
       {record && (

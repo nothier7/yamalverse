@@ -116,13 +116,13 @@ export default function HomeClient() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 href="#season-snapshot"
-                className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-5 py-2 text-sm font-medium text-white shadow-[0_10px_30px_-16px_rgba(255,255,255,0.75)] backdrop-blur transition hover:border-white/60 hover:bg-white/20"
+                className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-5 py-2 text-sm font-medium text-white shadow-[0_10px_30px_-16px_rgba(255,255,255,0.75)] backdrop-blur transition hover:border-white/60 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
                 Track This Season
               </Link>
               <Link
                 href="/per90"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2 text-sm font-medium text-white/80 transition hover:border-white/45 hover:text-white"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 px-5 py-2 text-sm font-medium text-white/80 transition hover:border-white/45 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
                 Explore Per 90 Radar
               </Link>
@@ -165,8 +165,8 @@ export default function HomeClient() {
 
         {selectedFilter ? (
           loading ? (
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-neutral-200/80">
-              Loading stats...
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-neutral-200/80" aria-live="polite">
+              Loading stats…
             </div>
           ) : error ? (
             <div className="rounded-2xl border border-red-400/40 bg-red-500/10 p-6 text-red-100">
@@ -187,20 +187,20 @@ export default function HomeClient() {
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3 text-xs text-neutral-200/80">
                   <Link
-                href="/club"
-                    className="rounded-full border border-white/20 px-3 py-1 transition hover:border-indigo-200/60 hover:text-indigo-100"
+                    href="/club"
+                    className="rounded-full border border-white/20 px-3 py-1 transition hover:border-indigo-200/60 hover:text-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60"
                   >
                     Club hub
                   </Link>
                   <Link
                     href="/international"
-                    className="rounded-full border border-white/20 px-3 py-1 transition hover:border-indigo-200/60 hover:text-indigo-100"
+                    className="rounded-full border border-white/20 px-3 py-1 transition hover:border-indigo-200/60 hover:text-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60"
                   >
                     International form
                   </Link>
                   <Link
                     href="/opponents"
-                    className="rounded-full border border-white/20 px-3 py-1 transition hover:border-indigo-200/60 hover:text-indigo-100"
+                    className="rounded-full border border-white/20 px-3 py-1 transition hover:border-indigo-200/60 hover:text-indigo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60"
                   >
                     Opposition scouting
                   </Link>
@@ -229,7 +229,7 @@ export default function HomeClient() {
         <div className="grid gap-4 md:grid-cols-3">
           <Link
             href="/per90"
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-indigo-200/60"
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-indigo-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
             <div className="relative space-y-2">
@@ -245,7 +245,7 @@ export default function HomeClient() {
 
           <Link
             href="/opponents"
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-indigo-200/60"
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-indigo-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
             <div className="relative space-y-2">
@@ -261,11 +261,11 @@ export default function HomeClient() {
 
           <Link
             href="/honours"
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-indigo-200/60"
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur transition hover:border-indigo-200/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
             <div className="relative space-y-2">
-              <h3 className="text-lg font-semibold text-white">Milestones & Honours</h3>
+              <h3 className="text-lg font-semibold text-white">Milestones &amp; Honours</h3>
               <p className="text-sm text-neutral-200/75">
                 Track trophies, awards, and milestone appearances as his career accelerates.
               </p>
