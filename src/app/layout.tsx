@@ -1,9 +1,11 @@
+import React from "react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Script from "next/script";
 import AnalyticsWrapper from "./components/AnalyticsWrapper";
+import { PersonSchema, WebsiteSchema } from "./components/StructuredData";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,13 +18,46 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yamalverse",
-  description: "All Stats and Data about Lamine Yamal. Lamine Yamal goals, assists, appearances, trophies, and more.",
+  metadataBase: new URL("https://yamalverse.com"),
+  title: {
+    default: "Yamalverse - Lamine Yamal Career Stats and Records",
+    template: "%s | Yamalverse",
+  },
+  description:
+    "Track Lamine Yamal goals, assists, appearances, trophies, and milestones with a clean, football-focused dashboard.",
   icons: {
-    icon: '/favicon.ico',
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://yamalverse.com",
+    siteName: "Yamalverse",
+    title: "Yamalverse - Lamine Yamal Career Stats and Records",
+    description:
+      "Track Lamine Yamal goals, assists, appearances, trophies, and milestones with a clean, football-focused dashboard.",
+    images: [
+      {
+        url: "/og-image.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Yamalverse",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yamalverse - Lamine Yamal Career Stats and Records",
+    description:
+      "Track Lamine Yamal goals, assists, appearances, trophies, and milestones with a clean, football-focused dashboard.",
+    images: ["/og-image.jpeg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   verification: {
-    google: 'FPAzwi2VnyYUEGMu6-rb-s0Var9TNQh6iu6ogbmWh34',
+    google: "FPAzwi2VnyYUEGMu6-rb-s0Var9TNQh6iu6ogbmWh34",
   },
 };
 
@@ -36,6 +71,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <WebsiteSchema />
+        <PersonSchema />
         <Navbar/>
         {children}
         <AnalyticsWrapper />

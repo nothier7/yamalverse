@@ -1,6 +1,28 @@
 // app/opponents/page.tsx
+import React from 'react';
+import type { Metadata } from 'next';
 import OpponentsTable from "./ui/OpponentsTable";
 import { getOpponentContribs } from "../lib/queries/getOpponentContribs";
+
+export const metadata: Metadata = {
+  title: 'Lamine Yamal vs Opponents - Goals and Assists - Yamalverse',
+  description:
+    'See which clubs and national teams Lamine Yamal has scored or assisted against, ranked by total contributions.',
+  openGraph: {
+    title: 'Lamine Yamal vs Opponents',
+    description:
+      'See which clubs and national teams Lamine Yamal has scored or assisted against, ranked by total contributions.',
+    url: 'https://yamalverse.com/opponents',
+    images: ['/og-image.jpeg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Lamine Yamal vs Opponents',
+    description:
+      'See which clubs and national teams Lamine Yamal has scored or assisted against, ranked by total contributions.',
+    images: ['/og-image.jpeg'],
+  },
+};
 
 export default async function Page() {
   // No filters/toggles — just fetch everything (Club + International)

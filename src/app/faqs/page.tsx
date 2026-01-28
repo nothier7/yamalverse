@@ -1,11 +1,12 @@
-'use client';
-
-import { useState } from 'react';
+import React from 'react';
+import type { Metadata } from 'next';
+import FaqPageClient from './FaqPageClient';
 
 const faqs = [
   {
     question: 'Where does the data come from?',
-    answer: 'All stats are manually verified and sourced from publicly available match reports and performance datasets. We use OPTA data for match statistics.',
+    answer:
+      'All stats are manually verified and sourced from publicly available match reports and performance datasets. We use OPTA data for match statistics.',
   },
   {
     question: 'How often is the site updated?',
@@ -13,7 +14,8 @@ const faqs = [
   },
   {
     question: 'Do you track data for friendly matches?',
-    answer: 'We do track data for International friendlies, but not for club friendlies. Only competitive matches are included in the stats.',
+    answer:
+      'We do track data for International friendlies, but not for club friendlies. Only competitive matches are included in the stats.',
   },
   {
     question: 'What if I notice an error?',
@@ -21,43 +23,52 @@ const faqs = [
   },
   {
     question: 'Is this site officially affiliated with Lamine Yamal?',
-    answer: 'No. This is a fan-made project and not affiliated with FC Barcelona, the Spanish Football Federation, or Lamine Yamal.',
+    answer:
+      'No. This is a fan-made project and not affiliated with FC Barcelona, the Spanish Football Federation, or Lamine Yamal.',
   },
 ];
 
-const FaqPage = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const toggle = (index: number) => {
-    setOpenIndex(prev => (prev === index ? null : index));
-  };
-
-  return (
-    <div className="relative z-10 flex flex-col items-center gap-6 py-10 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-white">Frequently Asked Questions</h1>
-
-      <div className="w-full flex flex-col gap-4">
-        {faqs.map((faq, i) => (
-          <div
-            key={i}
-            className="bg-white/5 border border-white/10 rounded-xl p-4 backdrop-blur-md transition duration-200 shadow-md"
-          >
-            <button
-              className="flex justify-between items-center w-full text-left text-white font-medium text-base"
-              onClick={() => toggle(i)}
-            >
-              <span>{faq.question}</span>
-              <span className="text-lg">{openIndex === i ? '−' : '+'}</span>
-            </button>
-
-            {openIndex === i && (
-              <p className="text-sm text-neutral-300 mt-2">{faq.answer}</p>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
 };
 
-export default FaqPage;
+export const metadata: Metadata = {
+  title: 'FAQs About Lamine Yamal Stats - Yamalverse',
+  description:
+    'Answers to common questions about Yamalverse, data sources, update frequency, and match coverage.',
+  openGraph: {
+    title: 'FAQs About Lamine Yamal Stats',
+    description:
+      'Answers to common questions about Yamalverse, data sources, update frequency, and match coverage.',
+    url: 'https://yamalverse.com/faqs',
+    images: ['/og-image.jpeg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FAQs About Lamine Yamal Stats',
+    description:
+      'Answers to common questions about Yamalverse, data sources, update frequency, and match coverage.',
+    images: ['/og-image.jpeg'],
+  },
+};
+
+export default function FaqPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <FaqPageClient faqs={faqs} />
+    </>
+  );
+}
