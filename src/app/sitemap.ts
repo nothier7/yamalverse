@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/club`, lastModified, priority: 0.8, changeFrequency: 'weekly' },
     { url: `${baseUrl}/international`, lastModified, priority: 0.8, changeFrequency: 'weekly' },
     { url: `${baseUrl}/per90`, lastModified, priority: 0.8, changeFrequency: 'weekly' },
+    { url: `${baseUrl}/motm`, lastModified, priority: 0.7, changeFrequency: 'weekly' },
     { url: `${baseUrl}/dribbles`, lastModified, priority: 0.7, changeFrequency: 'weekly' },
     { url: `${baseUrl}/opponents`, lastModified, priority: 0.7, changeFrequency: 'weekly' },
     { url: `${baseUrl}/honours`, lastModified, priority: 0.7, changeFrequency: 'monthly' },

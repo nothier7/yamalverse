@@ -16,4 +16,14 @@ export type Per90Stats = {
   ga_per90: number;
 };
 
+export type MotmStats = {
+  motmCount: number;
+  totalGames: number;
+  motmPercent: number;
+};
+
+export type MotmCompetitionStats = MotmStats & {
+  competition: string;
+};
+
 

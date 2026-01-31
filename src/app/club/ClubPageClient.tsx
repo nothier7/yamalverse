@@ -32,20 +32,12 @@ export default function ClubPageClient() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!selectedFilter) {
-      setStats({
-        club: null,
-        championsLeague: null,
-        Liga: null,
-        Copa: null,
-      });
-      return;
-    }
-
     const filterParams =
-      selectedFilter.type === 'season'
+      selectedFilter?.type === 'season'
         ? { season: String(selectedFilter.value) }
-        : { year: Number(selectedFilter.value) };
+        : selectedFilter?.type === 'year'
+        ? { year: Number(selectedFilter.value) }
+        : {};
 
     const queries = [
       { key: 'club', args: { type: 'Club', ...filterParams } },

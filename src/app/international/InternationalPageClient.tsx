@@ -32,20 +32,12 @@ export default function InternationalPageClient() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!selectedFilter) {
-      setStats({
-        intl: null,
-        euro: null,
-        nationsLeague: null,
-        euroQual: null,
-      });
-      return;
-    }
-
     const filterParams =
-      selectedFilter.type === 'season'
+      selectedFilter?.type === 'season'
         ? { season: String(selectedFilter.value) }
-        : { year: Number(selectedFilter.value) };
+        : selectedFilter?.type === 'year'
+        ? { year: Number(selectedFilter.value) }
+        : {};
 
     const queries = [
       { key: 'intl', args: { type: 'International', ...filterParams } },
