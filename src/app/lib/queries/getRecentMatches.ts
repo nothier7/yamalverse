@@ -37,12 +37,13 @@ export async function getRecentMatches(limit = 5): Promise<RecentMatchRow[] | nu
     .from('yamal_matches')
     .select(RECENT_MATCH_FIELDS)
     .order('date', { ascending: false })
-    .limit(limit);
+    .limit(limit)
+    .returns<RecentMatchRow[]>();
 
   if (error) {
     console.error('Error fetching recent matches:', error);
     return null;
   }
 
-  return (data || []) as RecentMatchRow[];
+  return data ?? [];
 }
