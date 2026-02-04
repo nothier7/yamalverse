@@ -256,7 +256,7 @@ function MatchCard({ match }: { match: RecentMatchRow }) {
         />
       </div>
       <div
-        className={`flex h-12 w-12 items-center justify-center rounded-lg text-sm font-semibold text-white ${getRatingClass(
+        className={`flex h-12 w-12 items-center justify-center rounded-lg text-base font-semibold text-white ${getRatingClass(
           ratingValue
         )}`}
         aria-label="Player rating"
