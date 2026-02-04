@@ -55,12 +55,17 @@ export async function getMotmStats(filter: MotmFilter = {}): Promise<MotmCompeti
   const rows = (data || []) as MotmRow[];
   const competitionMap = new Map<string, { motmCount: number; totalGames: number }>();
   let totalMotm = 0;
+  let totalGames = 0;
 
   for (const row of rows) {
+    if (row.motm === null) {
+      continue;
+    }
     const competition = row.competition || 'Other';
     const entry = competitionMap.get(competition) || { motmCount: 0, totalGames: 0 };
 
     entry.totalGames += 1;
+    totalGames += 1;
     if (row.motm) {
       entry.motmCount += 1;
       totalMotm += 1;
@@ -85,7 +90,7 @@ export async function getMotmStats(filter: MotmFilter = {}): Promise<MotmCompeti
     return aIndex - bIndex;
   });
 
-  const summary = buildStats(ALL_COMPETITIONS, totalMotm, rows.length);
+  const summary = buildStats(ALL_COMPETITIONS, totalMotm, totalGames);
 
   return [summary, ...competitionStats];
 }

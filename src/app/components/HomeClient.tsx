@@ -15,7 +15,18 @@ import { getRecentMatches, RecentMatchRow } from '../lib/queries/getRecentMatche
 const seasons = ['2022/23', '2023/24', '2024/25', '2025/26'];
 const years = [2023, 2024, 2025, 2026];
 
-export default function HomeClient() {
+type HomeClientProps = {
+  initialRecentMatches?: RecentMatchRow[] | null;
+  initialCareerStats?: {
+    barcelona: TeamCareerStats | null;
+    spain: TeamCareerStats | null;
+  } | null;
+};
+
+export default function HomeClient({
+  initialRecentMatches,
+  initialCareerStats,
+}: HomeClientProps) {
   const [selectedFilter, setSelectedFilter] = useState<{
     type: 'season' | 'year';
     value: string | number;
@@ -41,14 +52,14 @@ export default function HomeClient() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [recentMatches, setRecentMatches] = useState<RecentMatchRow[]>([]);
-  const [recentLoading, setRecentLoading] = useState(true);
+  const [recentMatches, setRecentMatches] = useState<RecentMatchRow[]>(initialRecentMatches ?? []);
+  const [recentLoading, setRecentLoading] = useState(initialRecentMatches == null);
   const [recentError, setRecentError] = useState<string | null>(null);
   const [careerStats, setCareerStats] = useState<{
     barcelona: TeamCareerStats | null;
     spain: TeamCareerStats | null;
-  }>({ barcelona: null, spain: null });
-  const [careerLoading, setCareerLoading] = useState(true);
+  }>(initialCareerStats ?? { barcelona: null, spain: null });
+  const [careerLoading, setCareerLoading] = useState(initialCareerStats == null);
   const [careerError, setCareerError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -105,6 +116,7 @@ export default function HomeClient() {
   }, [selectedFilter]);
 
   useEffect(() => {
+    if (initialRecentMatches != null) return;
     let isActive = true;
     setRecentLoading(true);
     setRecentError(null);
@@ -127,9 +139,10 @@ export default function HomeClient() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [initialRecentMatches]);
 
   useEffect(() => {
+    if (initialCareerStats != null) return;
     let isActive = true;
     setCareerLoading(true);
     setCareerError(null);
@@ -152,7 +165,7 @@ export default function HomeClient() {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [initialCareerStats]);
 
   const snapshotTitle = selectedFilter
     ? `${selectedFilter.value} ${selectedFilter.type === 'season' ? 'Season' : 'Year'}`

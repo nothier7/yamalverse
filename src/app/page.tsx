@@ -1,4 +1,6 @@
 import HomeClient from './components/HomeClient';
+import { getAllTimeTeamStats } from './lib/queries/getAllTimeTeamStats';
+import { getRecentMatches } from './lib/queries/getRecentMatches';
 
 export const metadata = {
   title: 'Yamalverse – Lamine Yamal Career Stats & Records',
@@ -28,6 +30,17 @@ export const metadata = {
   },
 };
 
-export default function HomePage() {
-  return <HomeClient />;
+export default async function HomePage() {
+  const [recentMatches, barcelona, spain] = await Promise.all([
+    getRecentMatches(5),
+    getAllTimeTeamStats('Barcelona'),
+    getAllTimeTeamStats('Spain'),
+  ]);
+
+  return (
+    <HomeClient
+      initialRecentMatches={recentMatches}
+      initialCareerStats={{ barcelona, spain }}
+    />
+  );
 }
