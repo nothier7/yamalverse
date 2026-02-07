@@ -16,11 +16,27 @@ type TeamRow = {
   motm?: boolean | null;
 };
 
-export async function getAllTimeTeamStats(team: string): Promise<TeamCareerStats | null> {
-  const { data, error } = await supabase
-    .from('yamal_matches')
-    .select('goals, assists, take_ons_successful, motm')
-    .eq('team', team);
+export type TeamStatsFilter = {
+  label: string;
+  type?: 'Club' | 'International';
+  team?: string;
+  teams?: string[];
+};
+
+export async function getAllTimeTeamStats(filter: TeamStatsFilter): Promise<TeamCareerStats | null> {
+  let query = supabase.from('yamal_matches').select('goals, assists, take_ons_successful, motm');
+
+  if (filter.type) {
+    query = query.eq('type', filter.type);
+  }
+
+  if (filter.teams && filter.teams.length > 0) {
+    query = query.in('team', filter.teams);
+  } else if (filter.team) {
+    query = query.eq('team', filter.team);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching team stats:', error);
@@ -41,7 +57,7 @@ export async function getAllTimeTeamStats(team: string): Promise<TeamCareerStats
   }
 
   return {
-    team,
+    team: filter.label,
     appearances: rows.length,
     goals,
     assists,

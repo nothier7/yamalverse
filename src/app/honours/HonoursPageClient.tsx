@@ -14,8 +14,8 @@ export default function HonoursPageClient() {
     },
     {
       title: 'Kopa Trophy',
-      times: 1,
-      seasons: ['2024'],
+      times: 2,
+      seasons: ['2024', '2025'],
     },
     {
       title: 'UEFA EURO Young PLayer of the Tournament',
@@ -77,8 +77,8 @@ export default function HonoursPageClient() {
     },
     {
       title: 'Spanish Super Cup',
-      times: 1,
-      seasons: ['2024/25'],
+      times: 2,
+      seasons: ['2024/25', '2025/26'],
     },
     {
       title: 'UEFA EURO',

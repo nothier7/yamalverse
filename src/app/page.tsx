@@ -35,8 +35,8 @@ export const revalidate = 21600;
 export default async function HomePage() {
   const [recentMatches, barcelona, spain] = await Promise.all([
     getRecentMatches(5),
-    getAllTimeTeamStats('Barcelona'),
-    getAllTimeTeamStats('Spain'),
+    getAllTimeTeamStats({ label: 'Barcelona', type: 'Club' }),
+    getAllTimeTeamStats({ label: 'Spain', type: 'International' }),
   ]);
 
   return (

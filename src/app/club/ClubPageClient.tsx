@@ -21,11 +21,13 @@ export default function ClubPageClient() {
     championsLeague: YamalStats | null;
     Liga: YamalStats | null;
     Copa: YamalStats | null;
+    Supercopa: YamalStats | null;
   }>({
     club: null,
     championsLeague: null,
     Liga: null,
     Copa: null,
+    Supercopa: null,
   });
 
   const [loading, setLoading] = useState(false);
@@ -44,6 +46,7 @@ export default function ClubPageClient() {
       { key: 'Liga', args: { competition: 'La Liga', ...filterParams } },
       { key: 'Copa', args: { competition: 'Copa del Rey', ...filterParams } },
       { key: 'championsLeague', args: { competition: 'Champions Lg', ...filterParams } },
+      { key: 'Supercopa', args: { competition: 'Supercopa de Espana', ...filterParams } },
     ] as const;
 
     setLoading(true);
@@ -92,6 +95,8 @@ export default function ClubPageClient() {
       {stats.Liga && <StatsCard title="La Liga Stats" {...stats.Liga} />}
 
       {stats.Copa && <StatsCard title="CDR Stats" {...stats.Copa} />}
+
+      {stats.Supercopa && <StatsCard title="Supercopa Stats" {...stats.Supercopa} />}
 
       {stats.championsLeague && (
         <StatsCard title="UEFA Champions League Stats" {...stats.championsLeague} />
