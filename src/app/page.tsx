@@ -30,6 +30,8 @@ export const metadata = {
   },
 };
 
+export const revalidate = 21600;
+
 export default async function HomePage() {
   const [recentMatches, barcelona, spain] = await Promise.all([
     getRecentMatches(5),
