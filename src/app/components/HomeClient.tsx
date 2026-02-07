@@ -147,7 +147,10 @@ export default function HomeClient({
     setCareerLoading(true);
     setCareerError(null);
 
-    Promise.all([getAllTimeTeamStats('Barcelona'), getAllTimeTeamStats('Spain')])
+    Promise.all([
+      getAllTimeTeamStats({ label: 'Barcelona', type: 'Club' }),
+      getAllTimeTeamStats({ label: 'Spain', type: 'International' }),
+    ])
       .then(([barcelona, spain]) => {
         if (!isActive) return;
         setCareerStats({ barcelona, spain });
