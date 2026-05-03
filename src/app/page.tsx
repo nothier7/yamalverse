@@ -1,4 +1,5 @@
 import HomeClient from './components/HomeClient';
+import { getLatestHomeInsight } from './lib/ai-insights/getLatestHomeInsight';
 import { getAllTimeTeamStats } from './lib/queries/getAllTimeTeamStats';
 import { getRecentMatches } from './lib/queries/getRecentMatches';
 
@@ -33,16 +34,18 @@ export const metadata = {
 export const revalidate = 21600;
 
 export default async function HomePage() {
-  const [recentMatches, barcelona, spain] = await Promise.all([
+  const [recentMatches, barcelona, spain, homeInsight] = await Promise.all([
     getRecentMatches(5),
     getAllTimeTeamStats({ label: 'Barcelona', type: 'Club' }),
     getAllTimeTeamStats({ label: 'Spain', type: 'International' }),
+    getLatestHomeInsight(),
   ]);
 
   return (
     <HomeClient
       initialRecentMatches={recentMatches}
       initialCareerStats={{ barcelona, spain }}
+      initialHomeInsight={homeInsight}
     />
   );
 }

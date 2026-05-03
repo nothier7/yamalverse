@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import AIInsightCard from './AIInsightCard';
 import AllTimeCareerSection from '../components/AllTimeCareerSection';
 import RecentFormSection from '../components/RecentFormSection';
 import StatsCard from '../components/StatsCard';
 import StatsFilterBar from '../components/StatsFilterBar';
+import { HomeInsightViewModel } from '../lib/ai-insights/getLatestHomeInsight';
 import { YamalStats } from '../types/stats';
 import { getAllTimeTeamStats, TeamCareerStats } from '../lib/queries/getAllTimeTeamStats';
 import { getFilteredStats } from '../lib/queries/getFilteredStats';
@@ -21,11 +23,13 @@ type HomeClientProps = {
     barcelona: TeamCareerStats | null;
     spain: TeamCareerStats | null;
   } | null;
+  initialHomeInsight?: HomeInsightViewModel | null;
 };
 
 export default function HomeClient({
   initialRecentMatches,
   initialCareerStats,
+  initialHomeInsight,
 }: HomeClientProps) {
   const [selectedFilter, setSelectedFilter] = useState<{
     type: 'season' | 'year';
@@ -176,6 +180,12 @@ export default function HomeClient({
 
   return (
     <div className="relative z-10 flex flex-col gap-16 py-16 text-white px-4 sm:px-6 lg:px-12">
+      <AIInsightCard
+        insight={initialHomeInsight ?? null}
+        recentMatches={recentMatches}
+        careerStats={careerStats}
+      />
+
       <AllTimeCareerSection
         barcelona={careerStats.barcelona}
         spain={careerStats.spain}
