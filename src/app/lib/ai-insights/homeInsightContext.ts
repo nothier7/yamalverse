@@ -7,13 +7,18 @@ import { HomeInsightContext, NewsArticle } from './types';
 function summarizeRecentMatches(matches: Awaited<ReturnType<typeof getRecentMatches>>): string {
   if (!matches || matches.length === 0) return 'Recent match data is unavailable.';
 
-  const lines = matches.slice(0, 5).map((match) => {
+  const latestMatch = matches[0];
+  const latestLine = latestMatch
+    ? `Latest logged match: ${latestMatch.date}: ${latestMatch.team ?? 'Team'} vs ${latestMatch.opponent ?? 'opponent'} in ${latestMatch.competition ?? 'competition'} (${latestMatch.result_score ?? 'score unavailable'}), ${latestMatch.goals ?? 0}G ${latestMatch.assists ?? 0}A.`
+    : 'Latest logged match is unavailable.';
+
+  const lines = matches.slice(1, 5).map((match) => {
     const goals = match.goals ?? 0;
     const assists = match.assists ?? 0;
     return `${match.date}: ${match.team ?? 'Team'} vs ${match.opponent ?? 'opponent'} in ${match.competition ?? 'competition'} (${match.result_score ?? 'score unavailable'}), ${goals}G ${assists}A.`;
   });
 
-  return `Recent matches: ${lines.join(' ')}`;
+  return `${latestLine} Previous logged matches for context: ${lines.join(' ') || 'none available.'}`;
 }
 
 function summarizeCareerStats(
@@ -27,7 +32,7 @@ function summarizeCareerStats(
     ? `Spain: ${spain.appearances} apps, ${spain.goals} goals, ${spain.assists} assists, ${spain.dribbles} successful dribbles.`
     : 'Spain career stats unavailable.';
 
-  return `${club} ${intl}`;
+  return `Background career totals only, do not lead with these unless directly relevant: ${club} ${intl}`;
 }
 
 export async function getRecentYamalArticles(limit = 5): Promise<NewsArticle[]> {

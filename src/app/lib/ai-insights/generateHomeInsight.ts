@@ -27,21 +27,26 @@ function getInputFingerprint(context: HomeInsightContext): string {
 
 function buildPrompt(context: HomeInsightContext): string {
   const articles = context.articles.map((article, index) => (
-    `${index + 1}. ${article.title} (${article.source}) ${article.canonical_url}`
+    `${index + 1}. ${article.title}${article.excerpt ? ` — ${article.excerpt}` : ''} (${article.source}) ${article.canonical_url}`
   )).join('\n');
 
   return [
     'Generate a concise homepage AI insight for Yamalverse.',
+    'Primary goal: tell visitors what is interesting about Lamine Yamal right now.',
+    'Prioritize recent source articles, current-state context, last logged match context, and fixture/news angles over career statistics.',
+    'Do not make the summary a career stat recap. Do not mention all-time Barcelona or Spain totals in the summary.',
+    'Only mention goals/assists in the summary if the latest logged match had a notable event such as a goal, assist, multiple contributions, red card, injury/news item, or clear fixture implication.',
     'Use only the provided context. Do not invent injuries, fixtures, transfers, or availability claims.',
-    'If recent news is thin, lean on the stats and explain that the brief is stats-led.',
+    'If recent news is thin, write a short current-state note using the latest logged match and say source coverage is limited.',
     'Return JSON only with this shape: {"headline": string, "summary": string, "bullets": string[], "sources": [{"title": string, "url": string, "source": string}]}',
     'Constraints: headline <= 90 chars, summary <= 280 chars, 2-3 bullets, each bullet <= 150 chars.',
+    'Style: crisp football briefing, no hype, no generic praise, no all-time stat dump.',
     '',
-    `Stats context:\n${context.statsSummary}`,
+    `Recent source articles, highest priority:\n${articles || 'No recent source articles available.'}`,
+    '',
+    `Latest match and background stats, secondary priority:\n${context.statsSummary}`,
     '',
     `Knowledge snippets:\n${context.knowledgeSnippets.map((snippet) => `- ${snippet}`).join('\n')}`,
-    '',
-    `Recent source articles:\n${articles || 'No recent source articles available.'}`,
   ].join('\n');
 }
 
