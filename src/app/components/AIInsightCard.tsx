@@ -52,9 +52,6 @@ export default function AIInsightCard({ insight, recentMatches, careerStats }: A
   const summary = insight?.summary
     ?? 'The scheduled AI brief is not available yet. Once the cron job runs, this space will focus on current news, last-match context, and what to watch next.';
   const bullets = insight?.bullets?.length ? insight.bullets : fallbackBullets;
-  const freshnessLabel = insight
-    ? insight.isStale ? 'Stale AI brief' : 'Fresh AI brief'
-    : 'Stats fallback';
 
   return (
     <section className="mx-auto w-full max-w-6xl">
@@ -64,9 +61,6 @@ export default function AIInsightCard({ insight, recentMatches, careerStats }: A
             <div className="mb-3 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-300/80">
               <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-white/85">
                 AI Insight
-              </span>
-              <span className={insight?.isStale ? 'text-amber-200' : 'text-neutral-300/80'}>
-                {freshnessLabel}
               </span>
             </div>
             <h1 className="text-2xl font-semibold text-white md:text-3xl">
