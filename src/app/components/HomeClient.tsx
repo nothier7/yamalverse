@@ -180,11 +180,7 @@ export default function HomeClient({
 
   return (
     <div className="relative z-10 flex flex-col gap-16 py-16 text-white px-4 sm:px-6 lg:px-12">
-      <AIInsightCard
-        insight={initialHomeInsight ?? null}
-        recentMatches={recentMatches}
-        careerStats={careerStats}
-      />
+      <AIInsightCard insight={initialHomeInsight ?? null} />
 
       <AllTimeCareerSection
         barcelona={careerStats.barcelona}

@@ -1,14 +1,7 @@
 import { HomeInsightViewModel } from '../lib/ai-insights/getLatestHomeInsight';
-import { RecentMatchRow } from '../lib/queries/getRecentMatches';
-import { TeamCareerStats } from '../lib/queries/getAllTimeTeamStats';
 
 type AIInsightCardProps = {
   insight: HomeInsightViewModel | null;
-  recentMatches: RecentMatchRow[];
-  careerStats: {
-    barcelona: TeamCareerStats | null;
-    spain: TeamCareerStats | null;
-  };
 };
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat('en-US', {
@@ -24,34 +17,17 @@ function formatUpdatedAt(value: string): string {
   return `Updated ${DATE_TIME_FORMATTER.format(date)}`;
 }
 
-function buildFallbackBullets(
-  recentMatches: RecentMatchRow[],
-  careerStats: AIInsightCardProps['careerStats']
-): string[] {
-  const latestMatch = recentMatches[0];
-  const barcelona = careerStats.barcelona;
-  const spain = careerStats.spain;
+const FALLBACK_BULLETS = [
+  'A new web-grounded briefing will appear after the next successful daily run.',
+  'Only current developments backed by clickable sources are published here.',
+];
 
-  return [
-    latestMatch
-      ? `Latest logged match: ${latestMatch.team ?? 'Team'} vs ${latestMatch.opponent ?? 'opponent'} in ${latestMatch.competition ?? 'competition'} (${latestMatch.result_score ?? 'score unavailable'}).`
-      : 'Recent match data is syncing, so this brief will update after the next successful cron run.',
-    barcelona
-      ? `Barcelona context is loaded; the AI brief will use it as background rather than repeating the site’s stat cards.`
-      : 'Barcelona context is temporarily unavailable.',
-    spain
-      ? `Spain context is loaded for international framing when current news points that way.`
-      : 'International context is temporarily unavailable.',
-  ];
-}
-
-export default function AIInsightCard({ insight, recentMatches, careerStats }: AIInsightCardProps) {
-  const fallbackBullets = buildFallbackBullets(recentMatches, careerStats);
+export default function AIInsightCard({ insight }: AIInsightCardProps) {
   const isFallback = !insight;
   const headline = insight?.headline ?? 'Today around Yamal';
   const summary = insight?.summary
-    ?? 'The scheduled AI brief is not available yet. Once the cron job runs, this space will focus on current news, last-match context, and what to watch next.';
-  const bullets = insight?.bullets?.length ? insight.bullets : fallbackBullets;
+    ?? 'The daily AI briefing is not available yet. It will focus on the most interesting verified story around Yamal—not repeat the stats below.';
+  const bullets = insight?.bullets?.length ? insight.bullets : FALLBACK_BULLETS;
 
   return (
     <section className="mx-auto w-full max-w-6xl">

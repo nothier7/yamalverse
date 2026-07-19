@@ -1,10 +1,10 @@
+import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { generateAndStoreHomeInsight, storeHomeInsightError } from '../../../lib/ai-insights/generateHomeInsight';
-import { buildHomeInsightContext } from '../../../lib/ai-insights/homeInsightContext';
-import { ingestNews } from '../../../lib/ai-insights/ingestNews';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 120;
 
 function isAuthorized(request: Request): boolean {
   const cronSecret = process.env.CRON_SECRET;
@@ -18,17 +18,24 @@ export async function GET(request: Request) {
   }
 
   try {
-    const ingestResult = await ingestNews();
-    const context = await buildHomeInsightContext();
-    const insight = await generateAndStoreHomeInsight(context);
+    const generation = await generateAndStoreHomeInsight();
+    let revalidationError: string | null = null;
+
+    try {
+      revalidatePath('/');
+    } catch (error) {
+      revalidationError = error instanceof Error ? error.message : 'Homepage revalidation failed.';
+      console.error('Failed to revalidate homepage after insight generation:', error);
+    }
 
     return NextResponse.json({
       ok: true,
-      articleFetchCount: ingestResult.fetched,
-      articleStoreCount: ingestResult.stored,
-      ingestErrors: ingestResult.errors,
-      insightId: insight.id,
-      generatedAt: insight.generated_at,
+      insightId: generation.insight.id,
+      generatedAt: generation.insight.generated_at,
+      angleType: generation.angleType,
+      sourceCount: generation.sourceCount,
+      revalidated: !revalidationError,
+      revalidationError,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown AI insight cron failure.';
