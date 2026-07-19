@@ -33,11 +33,13 @@ function getRatingDisplay(value: number | null): string {
 }
 
 function getRatingClass(value: number | null): string {
-  if (value === 10) return 'bg-[#0D28F2]';
-  if (value !== null && value >= 9) return 'bg-[#374DF5]';
-  if (value !== null && value >= 8) return 'bg-[#00ADC4]';
-  if (value !== null && value >= 7) return 'bg-[#00C424]';
-  return 'bg-slate-700/80';
+  if (value === null || !Number.isFinite(value)) return 'bg-[#828BA1]';
+  if (value >= 9) return 'bg-[#374DF5]';
+  if (value >= 8) return 'bg-[#00ADC4]';
+  if (value >= 7) return 'bg-[#00C424]';
+  if (value >= 6.5) return 'bg-[#D9AF00]';
+  if (value >= 6) return 'bg-[#ED7E07]';
+  return 'bg-[#CD0B00]';
 }
 
 function normalizeScore(score: number | null | undefined): string {
