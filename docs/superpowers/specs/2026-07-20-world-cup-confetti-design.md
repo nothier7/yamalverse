@@ -6,7 +6,7 @@ Celebrate Lamine Yamal's 2026 FIFA World Cup win with a short gold confetti anim
 
 ## User Experience
 
-- Play a light top-down shower of 32 gold confetti pieces for 3.2 seconds.
+- Play a continuous top-down shower of 64 gold confetti pieces for 5.5 seconds.
 - Run only on the homepage and only once per browser tab session.
 - Keep the page immediately readable and interactive while the animation runs.
 - Use a transparent, fixed overlay with `pointer-events: none` so confetti never blocks navigation, scrolling, or controls.
@@ -22,7 +22,7 @@ The component will render nothing during server rendering and on the first clien
 1. Check `window.matchMedia('(prefers-reduced-motion: reduce)')`.
 2. Read a versioned session-storage key such as `yamalverse:wc-2026-confetti:v1`.
 3. If motion is allowed and the key is absent, set the key and show the overlay.
-4. Start a timer matching the animation duration, then unmount the overlay.
+4. Start a 5.5-second timer matching the complete shower duration, then unmount the overlay.
 5. Clear the timer during cleanup.
 
 If session storage is unavailable, the component will render nothing so it cannot repeat unexpectedly or fail the homepage. Confetti geometry will come from a small deterministic module-level array rather than runtime randomness, preventing hydration inconsistencies and needless recalculation.
@@ -30,7 +30,8 @@ If session storage is unavailable, the component will render nothing so it canno
 ## Visual Treatment
 
 - Use narrow rectangular pieces in several related gold tones, including warm gold, pale champagne, and deeper metallic gold.
-- Vary horizontal position, size, delay, duration, rotation, and subtle sideways drift to avoid mechanical movement.
+- Vary horizontal position, size, rotation, and subtle sideways drift to avoid mechanical movement.
+- Give individual pieces a deterministic 4.7–5.2-second fall time and a 0–0.3-second start delay, keeping the shower continuous while ensuring every piece finishes within the 5.5-second overlay window.
 - Keep density low enough that the AI Insight headline and homepage controls remain easy to read.
 - Implement motion with CSS keyframes and transforms for compositor-friendly animation.
 - Avoid canvas, SVG particle engines, and third-party confetti packages.
@@ -49,7 +50,7 @@ The celebration is decorative and must fail closed with respect to the page: sto
 
 ## Verification
 
-- Confirm a fresh browser session shows the gold shower for 3.2 seconds.
+- Confirm a fresh browser session shows 64 gold pieces in a continuous shower for 5.5 seconds.
 - Confirm a reload in the same tab session does not replay it.
 - Confirm a new browser session can show it again.
 - Confirm reduced-motion emulation prevents the overlay from appearing.
