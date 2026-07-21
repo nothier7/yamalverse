@@ -5,23 +5,27 @@ import { useEffect, useState } from 'react';
 import {
   shouldPlayWorldCupConfetti,
   WORLD_CUP_CONFETTI_DURATION_MS,
+  WORLD_CUP_CONFETTI_PIECE_COUNT,
   WORLD_CUP_CONFETTI_SESSION_KEY,
 } from '../lib/worldCupConfetti';
 import styles from './WorldCupConfetti.module.css';
 
 const GOLD_TONES = ['#F7D76D', '#DDAA32', '#FFF0A6', '#C98920'] as const;
 
-const CONFETTI_PIECES = Array.from({ length: 32 }, (_, index) => ({
-  color: GOLD_TONES[index % GOLD_TONES.length],
-  delay: (index * 73) % 420,
-  drift: ((index % 2 === 0 ? -1 : 1) * (12 + ((index * 17) % 46))),
-  duration: 2_300 + ((index * 97) % 430),
-  height: 9 + ((index * 5) % 8),
-  left: 2 + ((index * 37) % 96),
-  start: (index * 29) % 180,
-  turn: 480 + ((index * 71) % 420),
-  width: 4 + ((index * 3) % 4),
-}));
+const CONFETTI_PIECES = Array.from(
+  { length: WORLD_CUP_CONFETTI_PIECE_COUNT },
+  (_, index) => ({
+    color: GOLD_TONES[index % GOLD_TONES.length],
+    delay: (index * 73) % 301,
+    drift: ((index % 2 === 0 ? -1 : 1) * (12 + ((index * 17) % 46))),
+    duration: 4_700 + ((index * 97) % 501),
+    height: 9 + ((index * 5) % 8),
+    left: 2 + ((index * 37) % 96),
+    start: (index * 29) % 180,
+    turn: 480 + ((index * 71) % 420),
+    width: 4 + ((index * 3) % 4),
+  })
+);
 
 type ConfettiPieceStyle = CSSProperties & {
   '--confetti-color': string;

@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   shouldPlayWorldCupConfetti,
   WORLD_CUP_CONFETTI_DURATION_MS,
+  WORLD_CUP_CONFETTI_PIECE_COUNT,
   WORLD_CUP_CONFETTI_SESSION_KEY,
 } from './worldCupConfetti.ts';
 
@@ -36,7 +37,8 @@ test('does not play when reduced motion is preferred', () => {
   );
 });
 
-test('uses a versioned storage key and a 3.2 second duration', () => {
+test('uses the approved continuous-shower density and duration', () => {
   assert.equal(WORLD_CUP_CONFETTI_SESSION_KEY, 'yamalverse:wc-2026-confetti:v1');
-  assert.equal(WORLD_CUP_CONFETTI_DURATION_MS, 3_200);
+  assert.equal(WORLD_CUP_CONFETTI_PIECE_COUNT, 64);
+  assert.equal(WORLD_CUP_CONFETTI_DURATION_MS, 5_500);
 });
