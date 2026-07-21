@@ -1,17 +1,36 @@
-import { createSupabaseServiceClient } from '../supabaseServer';
-import type { HomeAIInsight } from './types';
-import { parseAndValidateWebInsight } from './webInsight';
-import type { InsightAngle, ValidatedWebInsight } from './webInsight';
+import { createSupabaseServiceClient } from '../supabaseServer.ts';
+import type { HomeAIInsight } from './types.ts';
+import {
+  parseAndValidateWebInsight,
+  WebInsightValidationError,
+} from './webInsight.ts';
+import type {
+  InsightAngle,
+  ValidatedWebInsight,
+  WebInsightValidationCode,
+} from './webInsight.ts';
 
 const DEFAULT_MODEL = 'gpt-5.6';
-const INSIGHT_TTL_MS = 30 * 60 * 60 * 1000;
+const INSIGHT_TTL_MS = 12 * 60 * 60 * 1000;
+const OPENAI_ATTEMPT_TIMEOUT_MS = 50_000;
 
 function getModel(): string {
   return process.env.OPENAI_MODEL || DEFAULT_MODEL;
 }
 
-export function buildWebInsightPrompt(now = new Date()): string {
-  return [
+const RETRY_REASON_LABELS: Record<WebInsightValidationCode, string> = {
+  response_format: 'structured response formatting',
+  search_required: 'required web-search use',
+  source_grounding: 'exact source URL grounding',
+  editorial: 'editorial quality validation',
+  match_safety: 'completed-match result validation',
+};
+
+export function buildWebInsightPrompt(
+  now = new Date(),
+  retryReason?: WebInsightValidationCode
+): string {
+  const prompt = [
     'Create today\'s homepage AI Insight for Yamalverse, a site dedicated to Lamine Yamal.',
     `Current UTC time: ${now.toISOString()}.`,
     '',
@@ -34,6 +53,7 @@ export function buildWebInsightPrompt(now = new Date()): string {
     '- Do not rely on social posts, fan sites, Wikipedia, search-result snippets, or unsourced aggregators.',
     '- Every material factual sentence in the published headline, summary, or bullets must appear verbatim as an evidence.claim and cite one or more URLs you actually used.',
     '- Include one to four sources. Every source and evidence URL must be an exact URL returned by web search.',
+    '- Never guess, reconstruct, or manually type a source URL. Copy the exact URL from this response\'s web search results.',
     '- If sources conflict or evidence is ambiguous, omit the disputed claim.',
     '',
     'Match-result safety rules:',
@@ -43,10 +63,25 @@ export function buildWebInsightPrompt(now = new Date()): string {
     '- If the selected angle is not a completed match, match_facts may be empty.',
     '',
     'Return only the required structured response. Do not add markdown or commentary.',
-  ].join('\n');
+  ];
+
+  if (retryReason) {
+    prompt.push(
+      '',
+      'Corrective retry:',
+      `- The previous response failed ${RETRY_REASON_LABELS[retryReason]}. Start the research again.`,
+      '- Use only exact URLs returned by this attempt\'s web search. Do not reuse, infer, repair, redirect, or reconstruct any prior URL.',
+      '- Recheck every structured field against the rules before returning the response.'
+    );
+  }
+
+  return prompt.join('\n');
 }
 
-export function buildOpenAIRequestBody(now = new Date()) {
+export function buildOpenAIRequestBody(
+  now = new Date(),
+  retryReason?: WebInsightValidationCode
+) {
   return {
     model: getModel(),
     reasoning: {
@@ -58,7 +93,7 @@ export function buildOpenAIRequestBody(now = new Date()) {
     }],
     tool_choice: 'required',
     include: ['web_search_call.action.sources'],
-    input: buildWebInsightPrompt(now),
+    input: buildWebInsightPrompt(now, retryReason),
     store: false,
     text: {
       format: {
@@ -156,18 +191,20 @@ export function buildOpenAIRequestBody(now = new Date()) {
   };
 }
 
-async function callOpenAI(now: Date): Promise<ValidatedWebInsight> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error('Missing OPENAI_API_KEY.');
-
-  const response = await fetch('https://api.openai.com/v1/responses', {
+async function callOpenAI(
+  now: Date,
+  apiKey: string,
+  fetchImpl: typeof fetch,
+  retryReason?: WebInsightValidationCode
+): Promise<ValidatedWebInsight> {
+  const response = await fetchImpl('https://api.openai.com/v1/responses', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(buildOpenAIRequestBody(now)),
-    signal: AbortSignal.timeout(120_000),
+    body: JSON.stringify(buildOpenAIRequestBody(now, retryReason)),
+    signal: AbortSignal.timeout(OPENAI_ATTEMPT_TIMEOUT_MS),
   });
 
   if (!response.ok) {
@@ -175,19 +212,71 @@ async function callOpenAI(now: Date): Promise<ValidatedWebInsight> {
     throw new Error(`OpenAI generation failed: ${response.status} ${errorText}`);
   }
 
-  return parseAndValidateWebInsight(await response.json());
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch {
+    throw new WebInsightValidationError(
+      'response_format',
+      'OpenAI response body was not valid JSON.'
+    );
+  }
+
+  return parseAndValidateWebInsight(payload);
+}
+
+export type GenerateValidatedWebInsightOptions = {
+  apiKey?: string;
+  fetchImpl?: typeof fetch;
+  now?: Date;
+};
+
+export type ValidatedWebInsightGeneration = {
+  insight: ValidatedWebInsight;
+  attemptCount: number;
+};
+
+export async function generateValidatedWebInsight(
+  options: GenerateValidatedWebInsightOptions = {}
+): Promise<ValidatedWebInsightGeneration> {
+  const apiKey = options.apiKey ?? process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('Missing OPENAI_API_KEY.');
+
+  const now = options.now ?? new Date();
+  const fetchImpl = options.fetchImpl ?? fetch;
+  let retryReason: WebInsightValidationCode | undefined;
+
+  for (let attemptCount = 1; attemptCount <= 2; attemptCount += 1) {
+    try {
+      return {
+        insight: await callOpenAI(now, apiKey, fetchImpl, retryReason),
+        attemptCount,
+      };
+    } catch (error) {
+      if (attemptCount === 1 && error instanceof WebInsightValidationError) {
+        retryReason = error.code;
+        console.warn('Retrying AI insight after response validation failure:', error.code);
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw new Error('OpenAI insight generation exhausted its validation attempts.');
 }
 
 export type HomeInsightGenerationResult = {
   insight: HomeAIInsight;
   angleType: InsightAngle;
   sourceCount: number;
+  attemptCount: number;
 };
 
 export async function generateAndStoreHomeInsight(): Promise<HomeInsightGenerationResult> {
   const supabase = createSupabaseServiceClient();
   const now = new Date();
-  const generated = await callOpenAI(now);
+  const generation = await generateValidatedWebInsight({ now });
+  const generated = generation.insight;
   const expiresAt = new Date(now.getTime() + INSIGHT_TTL_MS);
 
   const { data, error } = await supabase
@@ -214,6 +303,7 @@ export async function generateAndStoreHomeInsight(): Promise<HomeInsightGenerati
     insight: data,
     angleType: generated.angleType,
     sourceCount: generated.sources.length,
+    attemptCount: generation.attemptCount,
   };
 }
 

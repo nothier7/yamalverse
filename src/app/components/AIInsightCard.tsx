@@ -18,7 +18,7 @@ function formatUpdatedAt(value: string): string {
 }
 
 const FALLBACK_BULLETS = [
-  'A new web-grounded briefing will appear after the next successful daily run.',
+  'A new web-grounded briefing will appear after the next successful scheduled run.',
   'Only current developments backed by clickable sources are published here.',
 ];
 
@@ -47,8 +47,16 @@ export default function AIInsightCard({ insight }: AIInsightCardProps) {
             </p>
           </div>
 
-          <div className="w-fit rounded-full border border-white/10 bg-slate-950/40 px-3 py-1.5 text-xs text-neutral-300/80">
-            {insight ? formatUpdatedAt(insight.generated_at) : 'Live generation pending'}
+          <div
+            className={`w-fit rounded-full border px-3 py-1.5 text-xs ${
+              insight?.isStale
+                ? 'border-amber-300/25 bg-amber-300/10 text-amber-100/90'
+                : 'border-white/10 bg-slate-950/40 text-neutral-300/80'
+            }`}
+          >
+            {insight
+              ? `${insight.isStale ? 'Refresh delayed · ' : ''}${formatUpdatedAt(insight.generated_at)}`
+              : 'Generation pending'}
           </div>
         </div>
 

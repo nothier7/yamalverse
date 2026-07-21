@@ -34,6 +34,7 @@ export async function GET(request: Request) {
       generatedAt: generation.insight.generated_at,
       angleType: generation.angleType,
       sourceCount: generation.sourceCount,
+      attemptCount: generation.attemptCount,
       revalidated: !revalidationError,
       revalidationError,
     });

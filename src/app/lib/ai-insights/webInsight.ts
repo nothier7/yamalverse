@@ -2,6 +2,23 @@ import type { AIInsightSource } from './types';
 
 export type InsightAngle = 'recent_match' | 'upcoming_match' | 'current_news' | 'limited_update';
 
+export type WebInsightValidationCode =
+  | 'response_format'
+  | 'search_required'
+  | 'source_grounding'
+  | 'editorial'
+  | 'match_safety';
+
+export class WebInsightValidationError extends Error {
+  readonly code: WebInsightValidationCode;
+
+  constructor(code: WebInsightValidationCode, message: string) {
+    super(message);
+    this.name = 'WebInsightValidationError';
+    this.code = code;
+  }
+}
+
 type EvidenceClaim = {
   claim: string;
   source_urls: string[];
@@ -91,6 +108,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function stringValue(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
+}
+
+function fail(code: WebInsightValidationCode, message: string): never {
+  throw new WebInsightValidationError(code, message);
 }
 
 export function canonicalizeSearchUrl(value: string): string | null {
@@ -235,10 +256,10 @@ function parseGeneratedInsight(text: string): GeneratedWebInsight {
   try {
     parsed = JSON.parse(text);
   } catch {
-    throw new Error('OpenAI response was not valid JSON.');
+    fail('response_format', 'OpenAI response was not valid JSON.');
   }
 
-  if (!isRecord(parsed)) throw new Error('OpenAI response failed insight validation.');
+  if (!isRecord(parsed)) fail('response_format', 'OpenAI response failed insight validation.');
 
   const angleType = parsed.angle_type;
   const headline = stringValue(parsed.headline);
@@ -265,7 +286,7 @@ function parseGeneratedInsight(text: string): GeneratedWebInsight {
     || evidence.some((claim) => claim === null)
     || matchFacts.some((fact) => fact === null)
   ) {
-    throw new Error('OpenAI response failed insight validation.');
+    fail('response_format', 'OpenAI response failed insight validation.');
   }
 
   return {
@@ -327,39 +348,39 @@ function hasContradictoryOutcome(copy: string, fact: MatchFact): boolean {
 
 function validateEditorialCopy(insight: GeneratedWebInsight): void {
   if (insight.headline.length > 90 || insight.summary.length > 280) {
-    throw new Error('OpenAI response exceeded insight length limits.');
+    fail('editorial', 'OpenAI response exceeded insight length limits.');
   }
 
   if (insight.bullets.some((bullet) => bullet.length > 150)) {
-    throw new Error('OpenAI response exceeded bullet length limits.');
+    fail('editorial', 'OpenAI response exceeded bullet length limits.');
   }
 
   const copy = [insight.headline, insight.summary, ...insight.bullets].join(' ');
   if (CAREER_RECAP_PATTERNS.some((pattern) => pattern.test(copy))) {
-    throw new Error('OpenAI response was a career-stat recap.');
+    fail('editorial', 'OpenAI response was a career-stat recap.');
   }
 
   if (GENERIC_PRAISE_PATTERNS.some((pattern) => pattern.test(copy))) {
-    throw new Error('OpenAI response was generic praise.');
+    fail('editorial', 'OpenAI response was generic praise.');
   }
 
   const normalizedCopy = normalizeClaimText(copy);
   for (const evidence of insight.evidence) {
     if (!isClaimCoveredByCopy(evidence.claim, normalizedCopy)) {
-      throw new Error('OpenAI evidence claim was not present in the published copy.');
+      fail('editorial', 'OpenAI evidence claim was not present in the published copy.');
     }
   }
 
   if (insight.angle_type === 'recent_match' && insight.match_facts.length === 0) {
-    throw new Error('Recent-match insight did not include normalized match facts.');
+    fail('match_safety', 'Recent-match insight did not include normalized match facts.');
   }
 
   for (const fact of insight.match_facts) {
     if (fact.outcome !== expectedOutcome(fact.team_score, fact.opponent_score)) {
-      throw new Error('OpenAI match outcome did not agree with the normalized score.');
+      fail('match_safety', 'OpenAI match outcome did not agree with the normalized score.');
     }
     if (hasContradictoryOutcome(copy, fact)) {
-      throw new Error('OpenAI copy contradicted the normalized match outcome.');
+      fail('match_safety', 'OpenAI copy contradicted the normalized match outcome.');
     }
   }
 }
@@ -368,7 +389,10 @@ function groundUrls(urls: string[], searchSources: Map<string, SearchSource>): v
   for (const url of urls) {
     const canonicalUrl = canonicalizeSearchUrl(url);
     if (!canonicalUrl || !searchSources.has(canonicalUrl)) {
-      throw new Error(`OpenAI response cited a URL that was not returned by web search: ${canonicalUrl ?? 'invalid URL'}`);
+      fail(
+        'source_grounding',
+        `OpenAI response cited a URL that was not returned by web search: ${canonicalUrl ?? 'invalid URL'}`
+      );
     }
   }
 }
@@ -383,7 +407,10 @@ function groundSources(
     const canonicalUrl = canonicalizeSearchUrl(source.url);
     const searched = canonicalUrl ? searchSources.get(canonicalUrl) : null;
     if (!canonicalUrl || !searched) {
-      throw new Error(`OpenAI response cited a URL that was not returned by web search: ${canonicalUrl ?? 'invalid URL'}`);
+      fail(
+        'source_grounding',
+        `OpenAI response cited a URL that was not returned by web search: ${canonicalUrl ?? 'invalid URL'}`
+      );
     }
 
     if (!grounded.has(canonicalUrl)) {
@@ -399,21 +426,23 @@ function groundSources(
 }
 
 export function parseAndValidateWebInsight(payload: unknown): ValidatedWebInsight {
-  if (!isRecord(payload)) throw new Error('OpenAI response payload was invalid.');
+  if (!isRecord(payload)) fail('response_format', 'OpenAI response payload was invalid.');
   const response = payload as OpenAIResponse;
   if (response.status === 'incomplete') {
-    throw new Error('OpenAI response was incomplete.');
+    fail('response_format', 'OpenAI response was incomplete.');
   }
   const items = Array.isArray(response.output) ? response.output as OpenAIOutputItem[] : [];
   const usedWebSearch = items.some((item) => item.type === 'web_search_call' && item.status !== 'failed');
 
-  if (!usedWebSearch) throw new Error('OpenAI response did not use web search.');
+  if (!usedWebSearch) fail('search_required', 'OpenAI response did not use web search.');
 
   const searchSources = collectSearchSources(items);
-  if (searchSources.size === 0) throw new Error('OpenAI web search returned no citeable sources.');
+  if (searchSources.size === 0) {
+    fail('source_grounding', 'OpenAI web search returned no citeable sources.');
+  }
 
   const text = extractOutputText(response, items);
-  if (!text) throw new Error('OpenAI response did not include text output.');
+  if (!text) fail('response_format', 'OpenAI response did not include text output.');
 
   const insight = parseGeneratedInsight(text);
   validateEditorialCopy(insight);

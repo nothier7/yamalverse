@@ -2,90 +2,10 @@
 
 import { useState } from 'react';
 import HonoursCard from '../components/HonoursCard';
+import { individualHonours, teamHonours } from './honoursData';
 
 export default function HonoursPageClient() {
   const [activeTab, setActiveTab] = useState<'individual' | 'team'>('team');
-
-  const individualHonours = [
-    {
-      title: 'Golden Boy',
-      times: 1,
-      seasons: ['2024'],
-    },
-    {
-      title: 'Kopa Trophy',
-      times: 2,
-      seasons: ['2024', '2025'],
-    },
-    {
-      title: 'UEFA EURO Young PLayer of the Tournament',
-      times: 1,
-      seasons: ['2024'],
-    },
-    {
-      title: 'La Liga Team of the Season',
-      times: 1,
-      seasons: ['2024/25'],
-    },
-    {
-      title: 'UEFA Champions League Team of the Season',
-      times: 1,
-      seasons: ['2024/25'],
-    },
-    {
-      title: 'UEFA EURO Goal of the Tournament',
-      times: 1,
-      seasons: ['2024'],
-    },
-    {
-      title: 'La Liga U23 Player of the Season',
-      times: 2,
-      seasons: ['2023/24', '2024/25'],
-    },
-    {
-      title: "IFFHS Men's World's Best Youth Player",
-      times: 1,
-      seasons: ['2024'],
-    },
-    {
-      title: "The Best FIFA Men's 11",
-      times: 1,
-      seasons: ['2024'],
-    },
-    {
-      title: 'Tuttosport The Youngest Award',
-      times: 1,
-      seasons: ['2023'],
-    },
-    {
-      title: 'Laureus World Sports Award for Breakthrough of the Year',
-      times: 1,
-      seasons: ['2025'],
-    },
-  ];
-
-  const teamHonours = [
-    {
-      title: 'La Liga',
-      times: 2,
-      seasons: ['2022/23', '2024/25'],
-    },
-    {
-      title: 'Copa del Rey',
-      times: 1,
-      seasons: ['2024/25'],
-    },
-    {
-      title: 'Spanish Super Cup',
-      times: 2,
-      seasons: ['2024/25', '2025/26'],
-    },
-    {
-      title: 'UEFA EURO',
-      times: 1,
-      seasons: ['2024'],
-    },
-  ];
 
   const honoursToDisplay = activeTab === 'individual' ? individualHonours : teamHonours;
 
@@ -98,10 +18,10 @@ export default function HonoursPageClient() {
         {['team', 'individual'].map((tab) => (
           <button
             key={tab}
-            className={`px-4 py-2 rounded-full text-white transition ${
+            className={`px-4 py-2 rounded-full transition ${
               activeTab === tab
                 ? 'bg-white text-black font-semibold'
-                : 'border border-white opacity-70'
+                : 'border border-white text-white opacity-70'
             }`}
             onClick={() => setActiveTab(tab as 'individual' | 'team')}
           >
@@ -112,9 +32,9 @@ export default function HonoursPageClient() {
 
       {/* Honour Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-5xl">
-        {honoursToDisplay.map((item, i) => (
+        {honoursToDisplay.map((item) => (
           <HonoursCard
-            key={i}
+            key={item.title}
             title={`${item.times}x ${item.title}`}
             subtitle={item.seasons.join(', ')}
           />
