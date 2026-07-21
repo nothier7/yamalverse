@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   shouldPlayWorldCupConfetti,
   WORLD_CUP_CONFETTI_DURATION_MS,
+  WORLD_CUP_CONFETTI_EMISSION_MS,
   WORLD_CUP_CONFETTI_PIECE_COUNT,
   WORLD_CUP_CONFETTI_SESSION_KEY,
 } from './worldCupConfetti.ts';
@@ -37,8 +38,9 @@ test('does not play when reduced motion is preferred', () => {
   );
 });
 
-test('uses the approved continuous-shower density and duration', () => {
-  assert.equal(WORLD_CUP_CONFETTI_SESSION_KEY, 'yamalverse:wc-2026-confetti:v1');
-  assert.equal(WORLD_CUP_CONFETTI_PIECE_COUNT, 64);
-  assert.equal(WORLD_CUP_CONFETTI_DURATION_MS, 5_500);
+test('uses the approved staggered physics-shower timing', () => {
+  assert.equal(WORLD_CUP_CONFETTI_SESSION_KEY, 'yamalverse:wc-2026-confetti:v2');
+  assert.equal(WORLD_CUP_CONFETTI_PIECE_COUNT, 90);
+  assert.equal(WORLD_CUP_CONFETTI_EMISSION_MS, 4_000);
+  assert.equal(WORLD_CUP_CONFETTI_DURATION_MS, 8_000);
 });

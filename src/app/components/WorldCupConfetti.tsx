@@ -1,50 +1,44 @@
 'use client';
 
-import type { CSSProperties } from 'react';
-import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useCallback, useEffect, useState } from 'react';
 import {
   shouldPlayWorldCupConfetti,
   WORLD_CUP_CONFETTI_DURATION_MS,
+  WORLD_CUP_CONFETTI_EMISSION_MS,
   WORLD_CUP_CONFETTI_PIECE_COUNT,
   WORLD_CUP_CONFETTI_SESSION_KEY,
 } from '../lib/worldCupConfetti';
 import styles from './WorldCupConfetti.module.css';
 
-const GOLD_TONES = ['#F7D76D', '#DDAA32', '#FFF0A6', '#C98920'] as const;
+const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
 
-const CONFETTI_PIECES = Array.from(
-  { length: WORLD_CUP_CONFETTI_PIECE_COUNT },
-  (_, index) => ({
-    color: GOLD_TONES[index % GOLD_TONES.length],
-    delay: (index * 73) % 301,
-    drift: ((index % 2 === 0 ? -1 : 1) * (12 + ((index * 17) % 46))),
-    duration: 4_700 + ((index * 97) % 501),
-    height: 9 + ((index * 5) % 8),
-    left: 2 + ((index * 37) % 96),
-    start: (index * 29) % 180,
-    turn: 480 + ((index * 71) % 420),
-    width: 4 + ((index * 3) % 4),
-  })
-);
+const GOLD_TONES = ['#F7D76D', '#DDAA32', '#FFF0A6', '#C98920'];
+const INITIAL_VELOCITY_X = { min: -4, max: 4 };
+const INITIAL_VELOCITY_Y = { min: 0.5, max: 3.5 };
 
-type ConfettiPieceStyle = CSSProperties & {
-  '--confetti-color': string;
-  '--confetti-delay': string;
-  '--confetti-drift': string;
-  '--confetti-duration': string;
-  '--confetti-height': string;
-  '--confetti-left': string;
-  '--confetti-start': string;
-  '--confetti-turn': string;
-  '--confetti-width': string;
+function drawGoldStrip(
+  this: { w: number; h: number },
+  context: CanvasRenderingContext2D
+) {
+  context.fillRect(-this.w / 6, -this.h / 2, this.w / 3, this.h);
+}
+
+type Viewport = {
+  width: number;
+  height: number;
 };
 
 export default function WorldCupConfetti() {
   const [isVisible, setIsVisible] = useState(false);
+  const [viewport, setViewport] = useState<Viewport>({ width: 0, height: 0 });
+
+  const hideConfetti = useCallback(() => {
+    setIsVisible(false);
+  }, []);
 
   useEffect(() => {
     let animationFrame: number | undefined;
-    let hideTimer: number | undefined;
 
     try {
       const prefersReducedMotion = window.matchMedia(
@@ -60,11 +54,8 @@ export default function WorldCupConfetti() {
 
       window.sessionStorage.setItem(WORLD_CUP_CONFETTI_SESSION_KEY, 'played');
       animationFrame = window.requestAnimationFrame(() => {
+        setViewport({ width: window.innerWidth, height: window.innerHeight });
         setIsVisible(true);
-        hideTimer = window.setTimeout(
-          () => setIsVisible(false),
-          WORLD_CUP_CONFETTI_DURATION_MS
-        );
       });
     } catch {
       return;
@@ -74,13 +65,29 @@ export default function WorldCupConfetti() {
       if (animationFrame !== undefined) {
         window.cancelAnimationFrame(animationFrame);
       }
-      if (hideTimer !== undefined) {
-        window.clearTimeout(hideTimer);
-      }
     };
   }, []);
 
-  if (!isVisible) return null;
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const updateViewport = () => {
+      setViewport({ width: window.innerWidth, height: window.innerHeight });
+    };
+    const hideTimer = window.setTimeout(
+      hideConfetti,
+      WORLD_CUP_CONFETTI_DURATION_MS
+    );
+
+    window.addEventListener('resize', updateViewport, { passive: true });
+
+    return () => {
+      window.removeEventListener('resize', updateViewport);
+      window.clearTimeout(hideTimer);
+    };
+  }, [hideConfetti, isVisible]);
+
+  if (!isVisible || viewport.width === 0 || viewport.height === 0) return null;
 
   return (
     <div
@@ -88,21 +95,24 @@ export default function WorldCupConfetti() {
       className={styles.overlay}
       data-world-cup-confetti="active"
     >
-      {CONFETTI_PIECES.map((piece, index) => {
-        const style: ConfettiPieceStyle = {
-          '--confetti-color': piece.color,
-          '--confetti-delay': `${piece.delay}ms`,
-          '--confetti-drift': `${piece.drift}px`,
-          '--confetti-duration': `${piece.duration}ms`,
-          '--confetti-height': `${piece.height}px`,
-          '--confetti-left': `${piece.left}%`,
-          '--confetti-start': `${piece.start}deg`,
-          '--confetti-turn': `${piece.turn}deg`,
-          '--confetti-width': `${piece.width}px`,
-        };
-
-        return <i className={styles.piece} key={index} style={style} />;
-      })}
+      <Confetti
+        className={styles.canvas}
+        colors={GOLD_TONES}
+        confettiSource={{ x: 0, y: -16, w: viewport.width, h: 8 }}
+        drawShape={drawGoldStrip}
+        friction={0.985}
+        gravity={0.07}
+        height={viewport.height}
+        initialVelocityX={INITIAL_VELOCITY_X}
+        initialVelocityY={INITIAL_VELOCITY_Y}
+        numberOfPieces={WORLD_CUP_CONFETTI_PIECE_COUNT}
+        onConfettiComplete={hideConfetti}
+        opacity={0.95}
+        recycle={false}
+        tweenDuration={WORLD_CUP_CONFETTI_EMISSION_MS}
+        width={viewport.width}
+        wind={0.002}
+      />
     </div>
   );
 }
