@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import {
+  shouldPlayWorldCupConfetti,
+  WORLD_CUP_CONFETTI_DURATION_MS,
+  WORLD_CUP_CONFETTI_SESSION_KEY,
+} from './worldCupConfetti.ts';
+
+test('plays for a visitor who has not celebrated in this session', () => {
+  assert.equal(
+    shouldPlayWorldCupConfetti({
+      hasPlayed: false,
+      prefersReducedMotion: false,
+    }),
+    true
+  );
+});
+
+test('does not replay in the same browser session', () => {
+  assert.equal(
+    shouldPlayWorldCupConfetti({
+      hasPlayed: true,
+      prefersReducedMotion: false,
+    }),
+    false
+  );
+});
+
+test('does not play when reduced motion is preferred', () => {
+  assert.equal(
+    shouldPlayWorldCupConfetti({
+      hasPlayed: false,
+      prefersReducedMotion: true,
+    }),
+    false
+  );
+});
+
+test('uses a versioned storage key and a 3.2 second duration', () => {
+  assert.equal(WORLD_CUP_CONFETTI_SESSION_KEY, 'yamalverse:wc-2026-confetti:v1');
+  assert.equal(WORLD_CUP_CONFETTI_DURATION_MS, 3_200);
+});

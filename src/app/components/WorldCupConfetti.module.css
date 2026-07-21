@@ -1,0 +1,51 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.piece {
+  position: absolute;
+  top: -1.5rem;
+  left: var(--confetti-left);
+  width: var(--confetti-width);
+  height: var(--confetti-height);
+  border-radius: 1px;
+  background: var(--confetti-color);
+  opacity: 0;
+  will-change: transform, opacity;
+  animation-name: world-cup-confetti-fall;
+  animation-duration: var(--confetti-duration);
+  animation-delay: var(--confetti-delay);
+  animation-timing-function: cubic-bezier(0.18, 0.7, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+@keyframes world-cup-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -8vh, 0) rotate(var(--confetti-start));
+  }
+
+  8% {
+    opacity: 0.95;
+  }
+
+  78% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--confetti-drift), 108vh, 0) rotate(var(--confetti-turn));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay {
+    display: none;
+  }
+}

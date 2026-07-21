@@ -1,4 +1,5 @@
 import HomeClient from './components/HomeClient';
+import WorldCupConfetti from './components/WorldCupConfetti';
 import { getLatestHomeInsight } from './lib/ai-insights/getLatestHomeInsight';
 import { getAllTimeTeamStats } from './lib/queries/getAllTimeTeamStats';
 import { getRecentMatches } from './lib/queries/getRecentMatches';
@@ -42,10 +43,13 @@ export default async function HomePage() {
   ]);
 
   return (
-    <HomeClient
-      initialRecentMatches={recentMatches}
-      initialCareerStats={{ barcelona, spain }}
-      initialHomeInsight={homeInsight}
-    />
+    <>
+      <WorldCupConfetti />
+      <HomeClient
+        initialRecentMatches={recentMatches}
+        initialCareerStats={{ barcelona, spain }}
+        initialHomeInsight={homeInsight}
+      />
+    </>
   );
 }

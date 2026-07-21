@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "node --test --experimental-strip-types src/app/lib/ai-insights/*.test.ts src/app/honours/*.test.ts",
+    "test": "node --test --experimental-strip-types src/app/lib/*.test.ts src/app/lib/ai-insights/*.test.ts src/app/honours/*.test.ts",
     "typecheck": "tsc --noEmit --incremental false"
   },
   "dependencies": {
