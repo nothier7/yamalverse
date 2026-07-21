@@ -1,0 +1,22 @@
+name: Refresh AI insight
+
+on:
+  schedule:
+    - cron: '0 */8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Generate and publish the latest insight
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: >-
+          curl --fail-with-body --silent --show-error
+          --header "Authorization: Bearer ${CRON_SECRET}"
+          https://www.yamalverse.com/api/cron/generate-home-insight

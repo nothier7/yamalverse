@@ -20,11 +20,13 @@ The second migration was applied while Yamalverse used a separate news-discovery
 
 ## Eight-Hour Cron
 
-`vercel.json` invokes `/api/cron/generate-home-insight` every eight hours at 00:00, 08:00, and 16:00 UTC. Vercel sends the production `CRON_SECRET` as a bearer token, and the route rejects requests without an exact match:
+`.github/workflows/refresh-ai-insight.yml` invokes `/api/cron/generate-home-insight` every eight hours at 00:00, 08:00, and 16:00 UTC. GitHub Actions sends the repository `CRON_SECRET` as a bearer token, and the route rejects requests without an exact match:
 
 ```text
 Authorization: Bearer <CRON_SECRET>
 ```
+
+The GitHub Actions scheduler is used because Vercel Hobby projects only support daily cron jobs. Do not also configure a Vercel cron for this route; one scheduler prevents duplicate generations. The workflow can also be started manually from the repository's Actions tab.
 
 Do not create a second Supabase Cron schedule for this route. If the retired two-hour job still exists, remove it once:
 
