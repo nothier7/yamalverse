@@ -1,12 +1,24 @@
 export type HonourCategory = 'team' | 'individual';
+export type TeamName = 'Barcelona' | 'Spain';
 
-export type Honour = {
+type HonourBase = {
   title: string;
   times: number;
   seasons: string[];
-  category: HonourCategory;
   sourceUrl: string;
 };
+
+export type TeamHonour = HonourBase & {
+  category: 'team';
+  team: TeamName;
+};
+
+export type IndividualHonour = HonourBase & {
+  category: 'individual';
+  team?: never;
+};
+
+export type Honour = TeamHonour | IndividualHonour;
 
 const BARCA_HONOURS_URL =
   'https://www.fcbarcelona.com/en/football/first-team/squad/129404/lamine-yamal';
@@ -25,6 +37,7 @@ export const honours: Honour[] = [
     times: 1,
     seasons: ['2026'],
     category: 'team',
+    team: 'Spain',
     sourceUrl:
       'https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/spain-argentina-final-report-highlights',
   },
@@ -33,6 +46,7 @@ export const honours: Honour[] = [
     times: 3,
     seasons: ['2022/23', '2024/25', '2025/26'],
     category: 'team',
+    team: 'Barcelona',
     sourceUrl: BARCA_HONOURS_URL,
   },
   {
@@ -40,6 +54,7 @@ export const honours: Honour[] = [
     times: 1,
     seasons: ['2024/25'],
     category: 'team',
+    team: 'Barcelona',
     sourceUrl: BARCA_HONOURS_URL,
   },
   {
@@ -47,6 +62,7 @@ export const honours: Honour[] = [
     times: 2,
     seasons: ['2024/25', '2025/26'],
     category: 'team',
+    team: 'Barcelona',
     sourceUrl: BARCA_HONOURS_URL,
   },
   {
@@ -54,6 +70,7 @@ export const honours: Honour[] = [
     times: 1,
     seasons: ['2024'],
     category: 'team',
+    team: 'Spain',
     sourceUrl:
       'https://www.uefa.com/uefaeuro/history/news/028f-1b5e5c2b7b67-d5faab9be20b-1000--spain-2-1-england-late-oyarzabal-winner-earns-la-roja-reco/',
   },
@@ -156,7 +173,28 @@ export const honours: Honour[] = [
   },
 ];
 
-export const teamHonours = honours.filter((honour) => honour.category === 'team');
-export const individualHonours = honours.filter(
-  (honour) => honour.category === 'individual'
+export const teamHonours = honours.filter(
+  (honour): honour is TeamHonour => honour.category === 'team'
 );
+export const individualHonours = honours.filter(
+  (honour): honour is IndividualHonour => honour.category === 'individual'
+);
+
+function normalizeTeamName(teamName: string): string {
+  return teamName.trim().toLowerCase();
+}
+
+export function getTeamTitleCount(
+  teamName: string | null | undefined
+): number {
+  if (!teamName) return 0;
+
+  const normalizedTeamName = normalizeTeamName(teamName);
+  return teamHonours.reduce(
+    (total, honour) =>
+      normalizeTeamName(honour.team) === normalizedTeamName
+        ? total + honour.times
+        : total,
+    0
+  );
+}

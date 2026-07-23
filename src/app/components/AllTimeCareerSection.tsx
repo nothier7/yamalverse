@@ -1,15 +1,7 @@
 import StatBox from './ui/StatBox';
 import { TeamCareerStats } from '../lib/queries/getAllTimeTeamStats';
 import { getTeamCrest, getTeamInitials } from './teamCrests';
-
-const TITLE_COUNTS: Record<string, number> = {
-  barcelona: 5,
-  spain: 1,
-};
-
-function normalizeTeamName(name: string): string {
-  return name.trim().toLowerCase();
-}
+import { getTeamTitleCount } from '../honours/honoursData';
 
 type AllTimeCareerSectionProps = {
   barcelona: TeamCareerStats | null;
@@ -37,7 +29,7 @@ function TeamHeader({ name }: { name: string }) {
 }
 
 function TeamStatsCard({ stats }: { stats: TeamCareerStats }) {
-  const titles = TITLE_COUNTS[normalizeTeamName(stats.team)] ?? 0;
+  const titles = getTeamTitleCount(stats.team);
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
       <TeamHeader name={stats.team} />

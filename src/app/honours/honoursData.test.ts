@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { individualHonours, teamHonours } from './honoursData.ts';
+import {
+  getTeamTitleCount,
+  individualHonours,
+  teamHonours,
+} from './honoursData.ts';
 
 test('team honours include the third La Liga title and 2026 World Cup', () => {
   const laLiga = teamHonours.find((honour) => honour.title === 'La Liga');
@@ -9,6 +13,7 @@ test('team honours include the third La Liga title and 2026 World Cup', () => {
     times: 3,
     seasons: ['2022/23', '2024/25', '2025/26'],
     category: 'team',
+    team: 'Barcelona',
     sourceUrl: 'https://www.fcbarcelona.com/en/football/first-team/squad/129404/lamine-yamal',
   });
 
@@ -18,8 +23,16 @@ test('team honours include the third La Liga title and 2026 World Cup', () => {
     times: 1,
     seasons: ['2026'],
     category: 'team',
+    team: 'Spain',
     sourceUrl: 'https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/spain-argentina-final-report-highlights',
   });
+});
+
+test('derives landing-page title totals from official team honours', () => {
+  assert.equal(getTeamTitleCount('Barcelona'), 6);
+  assert.equal(getTeamTitleCount('  spain  '), 2);
+  assert.equal(getTeamTitleCount('Unknown'), 0);
+  assert.equal(getTeamTitleCount(undefined), 0);
 });
 
 test('individual honours include the latest major official season awards', () => {
