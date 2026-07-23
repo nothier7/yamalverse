@@ -153,9 +153,9 @@ export default function DribblesPageClient() {
       )}
 
       {record && (
-        <div className="bg-yellow-100/10 border-l-4 border-yellow-500 p-4 rounded-lg text-white max-w-md w-full shadow">
-          <h2 className="text-lg font-semibold mb-1">Most Dribbles in a Game</h2>
-          <p className="text-sm">
+        <div className="w-full max-w-md rounded-xl border border-white/10 bg-white/5 p-4 text-white backdrop-blur-md">
+          <h2 className="mb-1 text-sm font-medium text-neutral-300">Most Dribbles in a Game</h2>
+          <p className="text-base font-semibold">
             {record.take_ons_successful} vs {record.opponent} ({record.competition})
           </p>
         </div>
